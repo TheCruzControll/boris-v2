@@ -192,10 +192,9 @@ export async function canUserMakeAction(
   userId: string,
   action: UserAction
 ): Promise<boolean> {
+  return true;
   const exists: number = await redis.exists(`${userId}-${action}`);
-  console.log("exists => ", userId, exists, exists);
   const cdDuration = await getCooldownDuration(userId, action);
-  console.log("this is cdDuration", cdDuration);
   // 0 means does not exist
   return exists === 0 || (cdDuration.minutes <= 0 && cdDuration.seconds <= 0);
 }

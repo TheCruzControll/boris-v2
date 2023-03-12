@@ -107,6 +107,7 @@ const DropCards: Command = {
     collector.on(
       "collect",
       async (buttonInteraction: MessageComponentInteraction) => {
+        await buttonInteraction.deferUpdate();
         /*
         in here only check for the value of the button id for the user that initiated the interaction
         aka: buttonInteraction.user.id === interaction.user.id
@@ -148,9 +149,6 @@ const DropCards: Command = {
               `${buttonInteraction.user.toString()} woops, an error happened. Please try again`
             );
           }
-          console.log("no chosen skin found");
-          console.log("skins =>", skins);
-          console.log("buttonInteractin.customId", buttonInteraction.customId);
           return;
         }
 
@@ -195,12 +193,6 @@ const DropCards: Command = {
           );
         }
         await trackUserAction(buttonInteraction.user.id, UserActions.Claim);
-
-        await interaction.editReply({
-          content: `${interaction.user.toString()} is dropping cards`,
-          files: [attachment],
-          components: [row],
-        });
       }
     );
 

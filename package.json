@@ -2,6 +2,7 @@
   "private": true,
   "scripts": {
     "build": "turbo run build",
+    "build:api": "turbo run build --filter=api",
     "clean": "turbo run clean",
     "dev": "turbo run dev --no-cache  --continue",
     "dev:api": "turbo run dev --no-cache  --continue --filter=api",
