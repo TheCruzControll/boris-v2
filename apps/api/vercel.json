@@ -1,0 +1,14 @@
+{
+  "builds": [
+    
+      ": "dist/index.js",
+      ": "@vercel/node"
+    
+  ],
+  "routes": [
+    
+      rc": "/(.*)",
+      est": "index.js"
+    
+  ]
+}
