@@ -6,7 +6,6 @@
     "clean": "turbo run clean",
     "dev": "turbo run dev --no-cache  --continue",
     "dev:api": "turbo run dev --no-cache  --continue --filter=api",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "lint": "turbo run lint",
     "test": "turbo run test"
   },
