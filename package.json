@@ -6,6 +6,8 @@
     "clean": "turbo run clean",
     "dev": "turbo run dev --no-cache  --continue",
     "dev:api": "turbo run dev --no-cache  --continue --filter=api",
+    "start": "turbo run dev --no-cache  --continue",
+    "start:api": "turbo run dev --no-cache  --continue --filter=api",
     "lint": "turbo run lint",
     "test": "turbo run test"
   },
