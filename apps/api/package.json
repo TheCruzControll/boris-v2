@@ -7,7 +7,7 @@
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist",
     "dev": "tsup src/index.ts --format cjs --watch --onSuccess \"node dist/index.js\"",
     "lint": "tsc --noEmit && eslint \"src/**/*.ts*\"",
-    "start": "node dist/index.js",
+    "start": "tsup src/index.ts --format cjs --onSuccess \"node dist/index.js\"",
     "test": "jest --detectOpenHandles"
   },
   "jest": {
