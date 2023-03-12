@@ -2,9 +2,8 @@ import { getChance } from "../../singletons/chance";
 import { DateTime } from "luxon";
 import { removeNil } from "../../utils";
 import { createCanvas, loadImage, registerFont } from "canvas";
-import { Rank, Skin } from "@prisma/client";
+import { Rank, Skin, redis } from "database";
 import { UserAction } from "../../types/users";
-import { redis } from "database";
 
 interface CardImage {
   skinId: number;

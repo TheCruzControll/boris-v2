@@ -1,5 +1,4 @@
-import { Skin } from "@prisma/client";
-import { prisma } from "database";
+import { prisma, Skin } from "database";
 import {
   ActionRowBuilder,
   AttachmentBuilder,
