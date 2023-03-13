@@ -17,7 +17,9 @@ const handleSlashCommand = async (
 
   const command = client.slashCommands.get(interaction.commandName);
   if (!command) {
-    await interaction.followUp({ content: "An error has occurred" });
+    await interaction.followUp({
+      content: `${interaction.commandName} command does not exist`,
+    });
     return;
   }
   await interaction.deferReply();
@@ -28,7 +30,6 @@ const handleSlashCommand = async (
     await interaction.followUp({
       content: `${interaction.user.toString()} woops, an error happened. Please try again.`,
     });
-    console.log(err);
     return;
   }
 };

@@ -1,8 +1,6 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "globalDependencies": [
-    
-  
     "**/.env.*local"
   ],
   "pipeline": {
@@ -12,35 +10,22 @@
         ".next/**",
         "build/**",
         "api/**",
-        "public/buil
-        d/**"
-        
-      
+        "public/build/**"
       ],
       "dependsOn": [
         "^build",
-        
-      
         "^db:generate"
       ]
     },
     "test": {
-        
-      
       "outputs": [
         "coverage/**"
       ],
-        
-        
-      
       "dependsOn": []
     },
     "lint": {
       "dependsOn": [
         "^build"
-        
-        
-      
       ]
     },
     "dev": {
@@ -53,9 +38,15 @@
     },
     "start": {
       "dependsOn": [
-         "^db:generate"
-      ],
-      "persistent": true
+        "^build",
+        "^db:generate"
+      ]
+     },
+    "seed-db": {
+      "dependsOn": [
+        "^build",
+        "^db:generate"
+      ]
     },
     "clean": {
       "cache": false

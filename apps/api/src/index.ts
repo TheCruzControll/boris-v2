@@ -4,11 +4,7 @@ import { redis } from "database";
 import DiscordClient from "./discordClient";
 import registerListeners from "./registerListeners";
 import registerSlashCommands from "./registerSlashCommands";
-import { createServer } from "./server";
 
-// eslint-disable-next-line turbo/no-undeclared-env-vars
-const port = process.env.PORT || 5001;
-const server = createServer();
 dotenv.config();
 
 registerSlashCommands()
@@ -44,7 +40,3 @@ redis
   .catch(() => {
     console.log(`Redis Client connection Failed`);
   });
-
-server.listen(port, () => {
-  console.log(`api running on ${port}`);
-});

@@ -87,19 +87,15 @@ const DropCards: Command = {
     const images = await drawImages(skins);
     const attachment = new AttachmentBuilder(images);
 
-    await interaction.followUp({
+    const message = await interaction.editReply({
       content: `${interaction.user.toString()} is dropping cards`,
       files: [attachment],
       components: [row],
     });
     await trackUserAction(interaction.user.id, UserActions.Drop);
 
-    if (!interaction.channel) {
-      return;
-    }
     const interactionTime = Duration.fromObject({ seconds: 30 });
-    const channel = interaction.channel as TextChannel;
-    const collector = channel.createMessageComponentCollector({
+    const collector = message.createMessageComponentCollector({
       time: interactionTime.toMillis(),
     });
 
@@ -136,6 +132,16 @@ const DropCards: Command = {
           return;
         }
 
+        console.log("\n\n interactionid", interaction.id);
+        console.log("buttonInteractionid", buttonInteraction.id);
+        console.log("customids", [
+          buttonCustomId1,
+          buttonCustomId2,
+          buttonCustomId3,
+        ]);
+        console.log("skins", skins);
+        console.log("buttonInteraction", buttonInteraction.customId);
+
         const chosenSkin = skins.find((skin) => {
           return skin.mappedCustomButtonId === buttonInteraction.customId;
         });
@@ -147,6 +153,7 @@ const DropCards: Command = {
             await channel.send(
               `${buttonInteraction.user.toString()} woops, an error happened. Please try again`
             );
+            console.log("no chosen skin");
           }
           return;
         }

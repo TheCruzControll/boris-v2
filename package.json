@@ -7,6 +7,8 @@
     "dev": "turbo run dev --no-cache  --continue",
     "dev:api": "turbo run dev --no-cache  --continue --filter=api",
     "start:api": "turbo run start --filter=api",
+    "db:push": "turbo run db:push",
+    "seed-db": "turbo run seed-db",
     "lint": "turbo run lint",
     "test": "turbo run test"
   },
