@@ -23,6 +23,7 @@ import {
   getCooldownDuration,
   trackUserAction,
 } from "./helpers/cardDropHelpers";
+import { removeNil } from "../utils";
 
 const DropCards: Command = {
   data: new SlashCommandBuilder().setName("drop").setDescription("Drop Cards"),
@@ -45,29 +46,26 @@ const DropCards: Command = {
       }
       return;
     }
-    const [buttonCustomId1, buttonCustomId2, buttonCustomId3] = new Array(3)
-      .fill("")
-      .map(() => {
-        return v4();
-      });
+    const buttonIds = new Array(3).fill("").map(() => {
+      return v4();
+    });
 
-    const buttonIds = new Set([
-      buttonCustomId1,
-      buttonCustomId2,
-      buttonCustomId3,
-    ]);
+    const uniqueButtonIds = new Map();
+    uniqueButtonIds.set(buttonIds[0], new Set<string>());
+    uniqueButtonIds.set(buttonIds[1], new Set<string>());
+    uniqueButtonIds.set(buttonIds[2], new Set<string>());
 
     const row = new ActionRowBuilder<ButtonBuilder>().addComponents([
       new ButtonBuilder()
-        .setCustomId(buttonCustomId1)
+        .setCustomId(buttonIds[0])
         .setLabel("1")
         .setStyle(ButtonStyle.Primary),
       new ButtonBuilder()
-        .setCustomId(buttonCustomId2)
+        .setCustomId(buttonIds[1])
         .setLabel("2")
         .setStyle(ButtonStyle.Primary),
       new ButtonBuilder()
-        .setCustomId(buttonCustomId3)
+        .setCustomId(buttonIds[2])
         .setLabel("3")
         .setStyle(ButtonStyle.Primary),
     ]);
@@ -80,10 +78,15 @@ const DropCards: Command = {
       prisma.skin.findFirst({ skip: skips[1] }),
       prisma.skin.findFirst({ skip: skips[2] }),
     ]);
-    const skins = createCards(
-      [buttonCustomId1, buttonCustomId2, buttonCustomId3],
-      skinsFromDb
-    );
+
+    const skinsWithoutNil: Array<Skin> = removeNil(skinsFromDb);
+
+    const customIdToSkinMap = buttonIds.reduce((acc, id, index) => {
+      acc[id] = skinsWithoutNil[index];
+      return acc;
+    }, {} as Record<string, Skin>);
+
+    const skins = createCards(customIdToSkinMap);
     const images = await drawImages(skins);
     const attachment = new AttachmentBuilder(images);
 
@@ -103,10 +106,7 @@ const DropCards: Command = {
       "collect",
       async (buttonInteraction: MessageComponentInteraction) => {
         await buttonInteraction.deferUpdate();
-        /*
-        in here only check for the value of the button id for the user that initiated the interaction
-        aka: buttonInteraction.user.id === interaction.user.id
-      */
+
         if (
           !(await canUserMakeAction(
             buttonInteraction.user.id,
@@ -131,20 +131,8 @@ const DropCards: Command = {
           }
           return;
         }
+        const chosenSkin = skins[buttonInteraction.customId];
 
-        console.log("\n\n interactionid", interaction.id);
-        console.log("buttonInteractionid", buttonInteraction.id);
-        console.log("customids", [
-          buttonCustomId1,
-          buttonCustomId2,
-          buttonCustomId3,
-        ]);
-        console.log("skins", skins);
-        console.log("buttonInteraction", buttonInteraction.customId);
-
-        const chosenSkin = skins.find((skin) => {
-          return skin.mappedCustomButtonId === buttonInteraction.customId;
-        });
         if (!chosenSkin) {
           const channel = client.channels.cache.get(
             interaction.channelId
@@ -153,13 +141,12 @@ const DropCards: Command = {
             await channel.send(
               `${buttonInteraction.user.toString()} woops, an error happened. Please try again`
             );
-            console.log("no chosen skin");
           }
           return;
         }
 
         // if chosen skin has already been claimed,
-        if (!buttonIds.has(chosenSkin.mappedCustomButtonId)) {
+        if (!uniqueButtonIds.has(buttonInteraction.customId)) {
           const channel = client.channels.cache.get(
             interaction.channelId
           ) as TextChannel;
@@ -172,13 +159,78 @@ const DropCards: Command = {
           }
           return;
         }
-        buttonIds.delete(chosenSkin.mappedCustomButtonId);
 
+        if (interaction.user.id === buttonInteraction.user.id) {
+          uniqueButtonIds.delete(buttonInteraction.customId);
+          const card = await prisma.card.create({
+            data: {
+              generation: chosenSkin.generation,
+              rank: chosenSkin.rank,
+              ownerDiscordId: buttonInteraction.user.id,
+              skin: {
+                connect: {
+                  id: chosenSkin.skinId,
+                },
+              },
+            },
+          });
+
+          const channel = client.channels.cache.get(
+            interaction.channelId
+          ) as TextChannel;
+          if (channel) {
+            await channel.send(
+              `${buttonInteraction.user.toString()} claimed **${
+                chosenSkin.name
+              } | ${emojisToEmojiIds[chosenSkin.rank]}${chosenSkin.rank}` +
+                ` | \`${card.id}\`!**`
+            );
+          }
+          await trackUserAction(buttonInteraction.user.id, UserActions.Claim);
+        } else {
+          if (!uniqueButtonIds.has(buttonInteraction.customId)) {
+            const channel = client.channels.cache.get(
+              interaction.channelId
+            ) as TextChannel;
+            if (channel) {
+              await channel.send(
+                `${buttonInteraction.user.toString()} sorry, ${
+                  chosenSkin.name
+                } is already claimed`
+              );
+            }
+            return;
+          }
+          uniqueButtonIds.set(
+            buttonInteraction.customId,
+            uniqueButtonIds
+              .get(buttonInteraction.customId)
+              .add(buttonInteraction.user.id)
+          );
+          const channel = client.channels.cache.get(
+            interaction.channelId
+          ) as TextChannel;
+          if (channel) {
+            await channel.send(
+              `${buttonInteraction.user.toString()} has joined the raffle for ${
+                chosenSkin.name
+              }`
+            );
+          }
+          return;
+        }
+      }
+    );
+
+    collector.on("end", async () => {
+      for (const [buttonId, set] of Object.entries(uniqueButtonIds)) {
+        const userId = getChance().pickone(Array.from(set)) as string;
+        const chosenSkin = skins[buttonId];
         const card = await prisma.card.create({
           data: {
             generation: chosenSkin.generation,
             rank: chosenSkin.rank,
-            ownerDiscordId: buttonInteraction.user.id,
+            ownerDiscordId: userId,
             skin: {
               connect: {
                 id: chosenSkin.skinId,
@@ -192,30 +244,26 @@ const DropCards: Command = {
         ) as TextChannel;
         if (channel) {
           await channel.send(
-            `${buttonInteraction.user.toString()} claimed **${
-              chosenSkin.name
-            } | ${emojisToEmojiIds[chosenSkin.rank]}${chosenSkin.rank}` +
-              ` | \`${card.id}\`!**`
+            `<:@${userId}> claimed **${chosenSkin.name} | ${
+              emojisToEmojiIds[chosenSkin.rank]
+            }${chosenSkin.rank}` + ` | \`${card.id}\`!**`
           );
         }
-        await trackUserAction(buttonInteraction.user.id, UserActions.Claim);
+        await trackUserAction(userId, UserActions.Claim);
       }
-    );
-
-    collector.on("end", async () => {
       const disabledRow = new ActionRowBuilder<ButtonBuilder>().addComponents([
         new ButtonBuilder()
-          .setCustomId(buttonCustomId1)
+          .setCustomId(buttonIds[0])
           .setLabel("1")
           .setStyle(ButtonStyle.Primary)
           .setDisabled(true),
         new ButtonBuilder()
-          .setCustomId(buttonCustomId2)
+          .setCustomId(buttonIds[1])
           .setLabel("2")
           .setStyle(ButtonStyle.Primary)
           .setDisabled(true),
         new ButtonBuilder()
-          .setCustomId(buttonCustomId3)
+          .setCustomId(buttonIds[3])
           .setLabel("3")
           .setStyle(ButtonStyle.Primary)
           .setDisabled(true),

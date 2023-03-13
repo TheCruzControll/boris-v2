@@ -54,8 +54,8 @@ async function getSingleCard(
     return;
   }
 
-  const skins = [
-    {
+  const skins = {
+    [uuid.v4()]: {
       skinId: skinFromDb.id,
       generation: cardFromDb.generation,
       name: skinFromDb.name,
@@ -64,7 +64,7 @@ async function getSingleCard(
       championName: skinFromDb.championName,
       mappedCustomButtonId: uuid.v4(),
     },
-  ];
+  };
   const images = await drawImages(skins);
   const file = new AttachmentBuilder(images).setFile(images, "name.png");
 

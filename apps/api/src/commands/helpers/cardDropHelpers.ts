@@ -1,8 +1,7 @@
 import { getChance } from "../../singletons/chance";
 import { DateTime } from "luxon";
-import { removeNil } from "../../utils";
 import { createCanvas, loadImage, registerFont } from "canvas";
-import { Rank, Skin, redis } from "database";
+import { Rank, redis, Skin } from "database";
 import { UserAction } from "../../types/users";
 
 interface CardImage {
@@ -12,7 +11,6 @@ interface CardImage {
   url: string;
   rank: Rank;
   championName: string;
-  mappedCustomButtonId: string;
 }
 /*
   Each number is weighted based off of their number
@@ -40,27 +38,30 @@ export function getRank(): Rank {
 }
 
 export function createCards(
-  mappedCustomButtonIds: string[],
-  skins: Array<Skin | null>
-): CardImage[] {
-  return removeNil(skins).map((skin: Skin, index: number): CardImage => {
+  map: Record<string, Skin>
+): Record<string, CardImage> {
+  return Object.entries(map).reduce((acc, keyValuePair) => {
+    const [id, skin] = keyValuePair;
     const generation = getGeneration();
     const name = skin.name;
     const url = skin.asset;
     const rank = getRank();
     const championName = skin.championName;
-    return {
+    const cardImage = {
       skinId: skin.id,
       generation,
       name,
       url,
       rank,
       championName,
-      mappedCustomButtonId: mappedCustomButtonIds[index],
     };
-  });
+    acc[id] = cardImage;
+    return acc;
+  }, {} as Record<string, CardImage>);
 }
-export async function drawImages(cards: CardImage[]): Promise<Buffer> {
+export async function drawImages(
+  cards: Record<string, CardImage>
+): Promise<Buffer> {
   const largeBorders: Rank[] = [
     Rank.Platinum,
     Rank.Diamond,
@@ -76,29 +77,35 @@ export async function drawImages(cards: CardImage[]): Promise<Buffer> {
 
   const skinPositionOffset = 10;
   const spacing = 10;
+  const numOfCards = Object.entries(cards).length;
   registerFont("./assets/BeaufortforLOL-Bold.ttf", { family: "Beaufort" });
 
   const canvas = createCanvas(
-    borderWidth * cards.length +
-      cards.length * spacing +
-      cards.length * largeSkinPadding,
+    borderWidth * numOfCards +
+      numOfCards * spacing +
+      numOfCards * largeSkinPadding,
     borderHeight
   );
   const ctx = canvas.getContext("2d");
   ctx.textAlign = "center";
 
+  console.log("this is cards, ", cards);
   const borders = await Promise.all(
-    cards.map((card) => {
+    Object.values(cards).map((card) => {
+      console.log("this is card", card);
       return loadImage(`./assets/${card.rank}.png`);
     })
   );
   const images = await Promise.all(
-    cards.map((card) => {
+    Object.values(cards).map((card) => {
       return loadImage(card.url);
     })
   );
 
   for (let i = 0; i < images.length; i++) {
+    const cardId = Object.keys(cards)[i];
+    const skin = cards[cardId];
+
     const skinXPosition = borderWidth * i + spacing * i + skinPositionOffset;
     const borderXPosition = borderWidth * i + spacing * i;
     const gradient = ctx.createLinearGradient(0, borderHeight - 10, 0, 0);
@@ -113,7 +120,7 @@ export async function drawImages(cards: CardImage[]): Promise<Buffer> {
         add largeSkinPadding/2 to skinXPosition
         add largeSkinPadding to border width
    */
-    if (largeBorders.includes(cards[i].rank)) {
+    if (largeBorders.includes(skin.rank)) {
       // Background
       ctx.drawImage(
         images[i],
@@ -128,7 +135,7 @@ export async function drawImages(cards: CardImage[]): Promise<Buffer> {
       ctx.fillStyle = "rgba(255,255,255,1)";
       ctx.font = 'bold 20pt "Beaufort"';
       const fillTextName =
-        cards[i].name === "default" ? cards[i].championName : cards[i].name;
+        skin.name === "default" ? skin.championName : skin.name;
       ctx.fillText(
         fillTextName,
         skinXPosition + borderWidth / 2,
@@ -136,7 +143,7 @@ export async function drawImages(cards: CardImage[]): Promise<Buffer> {
         borderWidth - 60
       );
       ctx.fillText(
-        `Gen ${cards[i].generation}`,
+        `Gen ${skin.generation}`,
         skinXPosition + borderWidth / 2,
         borderHeight - borderHeight / 7 + 40,
         borderWidth - 60
@@ -160,7 +167,7 @@ export async function drawImages(cards: CardImage[]): Promise<Buffer> {
       ctx.fillStyle = "rgba(255,255,255,1)";
       ctx.font = 'bold 20pt "Beaufort"';
       const fillTextName =
-        cards[i].name === "default" ? cards[i].championName : cards[i].name;
+        skin.name === "default" ? skin.championName : skin.name;
       ctx.fillText(
         fillTextName,
         skinXPosition + borderWidth / 2,
@@ -168,7 +175,7 @@ export async function drawImages(cards: CardImage[]): Promise<Buffer> {
         borderWidth - 60
       );
       ctx.fillText(
-        `Gen ${cards[i].generation}`,
+        `Gen ${skin.generation}`,
         skinXPosition + borderWidth / 2,
         borderHeight - borderHeight / 7 + 40,
         borderWidth - 60
@@ -191,6 +198,7 @@ export async function canUserMakeAction(
   userId: string,
   action: UserAction
 ): Promise<boolean> {
+  return true;
   const exists: number = await redis.exists(`${userId}-${action}`);
   const cdDuration = await getCooldownDuration(userId, action);
   // 0 means does not exist
@@ -223,7 +231,6 @@ export async function trackUserAction(
     console.log(`cannot add new action for ${userId}, returning early`);
     return;
   }
-  console.log(`tracking info for ${userId}`);
   const cdInMinutes = 1;
   const time = DateTime.now().plus({ minutes: cdInMinutes });
   await redis.set(`${userId}-${action}`, time.toISO());
