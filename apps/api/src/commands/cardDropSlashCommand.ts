@@ -27,6 +27,7 @@ import {
 const DropCards: Command = {
   data: new SlashCommandBuilder().setName("drop").setDescription("Drop Cards"),
   run: async (interaction: CommandInteraction, client: DiscordClient) => {
+    console.log("hello world");
     if (!(await canUserMakeAction(interaction.user.id, UserActions.Drop))) {
       const cdDuration = await getCooldownDuration(
         interaction.user.id,
