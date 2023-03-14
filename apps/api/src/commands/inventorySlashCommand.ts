@@ -23,7 +23,6 @@ async function getSingleCard(
   const cardFromDb = await prisma.card.findFirst({
     where: {
       id: parseInt(cardId),
-      ownerDiscordId: interaction.user.id,
     },
   });
   if (!cardFromDb) {
