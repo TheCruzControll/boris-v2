@@ -18,11 +18,13 @@ import { emojisToEmojiIds } from "../types/emoji";
 import { UserActions } from "../types/users";
 import {
   canUserMakeAction,
+  CardImage,
   createCards,
   drawImages,
   getCooldownDuration,
   trackUserAction,
 } from "./helpers/cardDropHelpers";
+import * as chance from "chance";
 
 const DropCards: Command = {
   data: new SlashCommandBuilder().setName("drop").setDescription("Drop Cards"),
@@ -45,29 +47,29 @@ const DropCards: Command = {
       }
       return;
     }
-    const [buttonCustomId1, buttonCustomId2, buttonCustomId3] = new Array(3)
-      .fill("")
-      .map(() => {
-        return v4();
-      });
+    const buttonIds = new Array(3).fill("").map(() => {
+      return v4();
+    });
 
-    const buttonIds = new Set([
-      buttonCustomId1,
-      buttonCustomId2,
-      buttonCustomId3,
-    ]);
+    const uniqueButtonIds: Record<string, Set<string>> = buttonIds.reduce(
+      (acc, id) => {
+        acc[id] = new Set<string>();
+        return acc;
+      },
+      {} as Record<string, Set<string>>
+    );
 
     const row = new ActionRowBuilder<ButtonBuilder>().addComponents([
       new ButtonBuilder()
-        .setCustomId(buttonCustomId1)
+        .setCustomId(buttonIds[0])
         .setLabel("1")
         .setStyle(ButtonStyle.Primary),
       new ButtonBuilder()
-        .setCustomId(buttonCustomId2)
+        .setCustomId(buttonIds[1])
         .setLabel("2")
         .setStyle(ButtonStyle.Primary),
       new ButtonBuilder()
-        .setCustomId(buttonCustomId3)
+        .setCustomId(buttonIds[2])
         .setLabel("3")
         .setStyle(ButtonStyle.Primary),
     ]);
@@ -81,7 +83,7 @@ const DropCards: Command = {
       prisma.skin.findFirst({ skip: skips[2] }),
     ]);
     const skins = createCards(
-      [buttonCustomId1, buttonCustomId2, buttonCustomId3],
+      [buttonIds[0], buttonIds[1], buttonIds[2]],
       skinsFromDb
     );
     const images = await drawImages(skins);
@@ -132,17 +134,7 @@ const DropCards: Command = {
           return;
         }
 
-        console.log("\n\n interactionid", interaction.id);
-        console.log("buttonInteractionid", buttonInteraction.id);
-        console.log("customids", [
-          buttonCustomId1,
-          buttonCustomId2,
-          buttonCustomId3,
-        ]);
-        console.log("skins", skins);
-        console.log("buttonInteraction", buttonInteraction.customId);
-
-        const chosenSkin = skins.find((skin) => {
+        const chosenSkin: CardImage | undefined = skins.find((skin) => {
           return skin.mappedCustomButtonId === buttonInteraction.customId;
         });
         if (!chosenSkin) {
@@ -158,64 +150,77 @@ const DropCards: Command = {
           return;
         }
 
-        // if chosen skin has already been claimed,
-        if (!buttonIds.has(chosenSkin.mappedCustomButtonId)) {
+        if (buttonInteraction.user.id === interaction.user.id) {
+          delete uniqueButtonIds[chosenSkin.mappedCustomButtonId];
+          const card = await prisma.card.create({
+            data: {
+              generation: chosenSkin.generation,
+              rank: chosenSkin.rank,
+              ownerDiscordId: buttonInteraction.user.id,
+              skin: {
+                connect: {
+                  id: chosenSkin.skinId,
+                },
+              },
+            },
+          });
           const channel = client.channels.cache.get(
             interaction.channelId
           ) as TextChannel;
           if (channel) {
             await channel.send(
-              `${buttonInteraction.user.toString()} sorry, ${
+              `${buttonInteraction.user.toString()} claimed **${
                 chosenSkin.name
-              } is already claimed`
+              } | ${emojisToEmojiIds[chosenSkin.rank]}${chosenSkin.rank}` +
+                ` | \`${card.id}\`!**`
             );
           }
-          return;
-        }
-        buttonIds.delete(chosenSkin.mappedCustomButtonId);
+          await trackUserAction(buttonInteraction.user.id, UserActions.Claim);
+        } else {
+          const channel = client.channels.cache.get(
+            interaction.channelId
+          ) as TextChannel;
 
-        const card = await prisma.card.create({
-          data: {
-            generation: chosenSkin.generation,
-            rank: chosenSkin.rank,
-            ownerDiscordId: buttonInteraction.user.id,
-            skin: {
-              connect: {
-                id: chosenSkin.skinId,
-              },
-            },
-          },
-        });
-
-        const channel = client.channels.cache.get(
-          interaction.channelId
-        ) as TextChannel;
-        if (channel) {
-          await channel.send(
-            `${buttonInteraction.user.toString()} claimed **${
-              chosenSkin.name
-            } | ${emojisToEmojiIds[chosenSkin.rank]}${chosenSkin.rank}` +
-              ` | \`${card.id}\`!**`
+          if (
+            uniqueButtonIds[buttonInteraction.customId].has(
+              buttonInteraction.user.id
+            )
+          ) {
+            if (channel) {
+              await channel.send(
+                `${buttonInteraction.user.toString()} you can only have one raffle entru`
+              );
+            }
+            return;
+          }
+          uniqueButtonIds[buttonInteraction.customId].add(
+            buttonInteraction.user.id
           );
+          if (channel) {
+            await channel.send(
+              `${buttonInteraction.user.toString()} has joined the raffle for **${
+                chosenSkin.name
+              } | ${emojisToEmojiIds[chosenSkin.rank]}${chosenSkin.rank}`
+            );
+          }
         }
-        await trackUserAction(buttonInteraction.user.id, UserActions.Claim);
       }
     );
 
     collector.on("end", async () => {
       const disabledRow = new ActionRowBuilder<ButtonBuilder>().addComponents([
         new ButtonBuilder()
-          .setCustomId(buttonCustomId1)
+          .setCustomId(buttonIds[0])
           .setLabel("1")
           .setStyle(ButtonStyle.Primary)
           .setDisabled(true),
         new ButtonBuilder()
-          .setCustomId(buttonCustomId2)
+          .setCustomId(buttonIds[1])
           .setLabel("2")
           .setStyle(ButtonStyle.Primary)
           .setDisabled(true),
         new ButtonBuilder()
-          .setCustomId(buttonCustomId3)
+          .setCustomId(buttonIds[2])
           .setLabel("3")
           .setStyle(ButtonStyle.Primary)
           .setDisabled(true),
@@ -225,8 +230,50 @@ const DropCards: Command = {
         content: "*Cards can no longer be claimed*",
         components: [disabledRow],
       });
+
+      for (const [id, raffleEntrants] of Object.entries(uniqueButtonIds)) {
+        const winnerUserid = await getWinnerUserId(raffleEntrants);
+        if (winnerUserid === "") return;
+        const chosenSkin = skins.find((skin) => {
+          return skin.mappedCustomButtonId === id;
+        })!;
+
+        const card = await prisma.card.create({
+          data: {
+            generation: chosenSkin.generation,
+            rank: chosenSkin.rank,
+            ownerDiscordId: winnerUserid,
+            skin: {
+              connect: {
+                id: chosenSkin.skinId,
+              },
+            },
+          },
+        });
+        const channel = client.channels.cache.get(
+          interaction.channelId
+        ) as TextChannel;
+        if (channel) {
+          await channel.send(
+            `<@${winnerUserid}> claimed **${chosenSkin.name} | ${
+              emojisToEmojiIds[chosenSkin.rank]
+            }${chosenSkin.rank}` + ` | \`${card.id}\`!**`
+          );
+        }
+        await trackUserAction(winnerUserid, UserActions.Claim);
+      }
     });
   },
 };
+
+async function getWinnerUserId(raffleEntrants: Set<string>): Promise<string> {
+  if (raffleEntrants.size === 0) return "";
+  const pickedUserId = getChance().pickone(Array.from(raffleEntrants));
+  if (await canUserMakeAction(pickedUserId, UserActions.Claim)) {
+    return pickedUserId;
+  }
+  raffleEntrants.delete(pickedUserId);
+  return getWinnerUserId(raffleEntrants);
+}
 
 export default DropCards;

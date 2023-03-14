@@ -5,7 +5,7 @@ import { createCanvas, loadImage, registerFont } from "canvas";
 import { Rank, Skin, redis } from "database";
 import { UserAction, UserActions } from "../../types/users";
 
-interface CardImage {
+export interface CardImage {
   skinId: number;
   generation: number;
   name: string;
