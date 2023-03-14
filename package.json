@@ -1,21 +1,24 @@
 {
   "private": true,
   "scripts": {
-    "build": "turbo run build",
-    "build:api": "turbo run build --filter=api",
-    "clean": "turbo run clean",
-    "dev": "turbo run dev --no-cache  --continue",
-    "dev:api": "turbo run dev --no-cache  --continue --filter=api",
-    "start:api": "turbo run start --filter=api",
-    "db:push": "turbo run db:push",
-    "seed-db": "turbo run seed-db",
-    "lint": "turbo run lint",
-    "test": "turbo run test"
+    "build": "dotenv -- turbo run build",
+    "build:api": "dotenv -- turbo run build --filter=api",
+    "clean": "dotenv -- turbo run clean",
+    "dev": "dotenv -- turbo run dev --no-cache  --continue",
+    "dev:api": "dotenv -- turbo run dev --no-cache  --continue --filter=api",
+    "start:api": "dotenv -- turbo run start --filter=api",
+    "db:push": "dotenv -- turbo run db:push",
+    "seed-db": "dotenv -- turbo run seed-db",
+    "lint": "dotenv -- turbo run lint",
+    "test": "dotenv -- turbo run test"
   },
   "devDependencies": {
     "dotenv-mono": "^1.3.10",
     "prettier": "^2.7.1",
     "turbo": "latest"
   },
-  "packageManager": "pnpm@7.15.0"
+  "packageManager": "pnpm@7.15.0",
+  "dependencies": {
+    "dotenv-cli": "^7.1.0"
+  }
 }
