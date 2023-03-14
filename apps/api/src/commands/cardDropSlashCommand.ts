@@ -181,17 +181,25 @@ const DropCards: Command = {
             interaction.channelId
           ) as TextChannel;
 
+          // if already claimed
+          if (!uniqueButtonIds[chosenSkin.mappedCustomButtonId]) {
+            await channel.send(
+              `${buttonInteraction.user.toString()} sorry, ${
+                chosenSkin.name
+              } is already claimed`
+            );
+            return;
+          }
+
+          // if name is already in raffle
           if (
-            uniqueButtonIds[buttonInteraction.customId] &&
-            uniqueButtonIds[buttonInteraction.customId].has(
+            uniqueButtonIds[chosenSkin.mappedCustomButtonId].has(
               buttonInteraction.user.id
             )
           ) {
-            if (channel) {
-              await channel.send(
-                `${buttonInteraction.user.toString()} you can only have one raffle entru`
-              );
-            }
+            await channel.send(
+              `${buttonInteraction.user.toString()} you can only have one raffle entru`
+            );
             return;
           }
           uniqueButtonIds[buttonInteraction.customId].add(
