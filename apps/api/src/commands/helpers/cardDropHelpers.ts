@@ -3,7 +3,7 @@ import { DateTime } from "luxon";
 import { removeNil } from "../../utils";
 import { createCanvas, loadImage, registerFont } from "canvas";
 import { Rank, Skin, redis } from "database";
-import { UserAction } from "../../types/users";
+import { UserAction, UserActions } from "../../types/users";
 
 interface CardImage {
   skinId: number;
@@ -223,8 +223,13 @@ export async function trackUserAction(
     console.log(`cannot add new action for ${userId}, returning early`);
     return;
   }
-  console.log(`tracking info for ${userId}`);
-  const cdInMinutes = 1;
+  const cdInMinutes = (() => {
+    if (action === UserActions.Claim) {
+      return 2;
+    } else {
+      return 5;
+    }
+  })();
   const time = DateTime.now().plus({ minutes: cdInMinutes });
   await redis.set(`${userId}-${action}`, time.toISO());
   await redis.expire(`${userId}-${action}`, cdInMinutes * 60);
