@@ -119,6 +119,9 @@ async function getAllCards(
     include: {
       skin: true,
     },
+    orderBy: {
+      id: "asc",
+    },
   });
   const embeds = [];
 
