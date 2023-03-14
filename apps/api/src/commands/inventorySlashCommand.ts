@@ -67,10 +67,11 @@ async function getSingleCard(
   const images = await drawImages(skins);
   const file = new AttachmentBuilder(images).setFile(images, "name.png");
 
-  const { id, generation, rank, masteryPoints, masteryRank } = cardFromDb;
+  const { id, generation, rank, masteryPoints, masteryRank, ownerDiscordId } =
+    cardFromDb;
   const exampleEmbed = new EmbedBuilder()
     .setTitle("Card Details")
-    .setDescription(`Owned by ${interaction.user.toString()}`)
+    .setDescription(`Owned by <@${ownerDiscordId}>`)
     .setImage("attachment://name.png")
     .addFields(
       { name: "Id", value: id.toString() },
@@ -138,6 +139,7 @@ async function getAllCards(
   }
 
   const pages = Math.ceil(cards.length / 10);
+
   for (let i = 0; i < pages; i++) {
     const paginatedCards: Array<Card & { skin: Skin }> = paginate<
       Card & { skin: Skin }

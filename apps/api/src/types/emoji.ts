@@ -11,8 +11,5 @@ export const emojisToEmojiIds: Record<Rank, string> = {
   [Rank.Grandmaster]: "<:grandmaster:1081478873490931782>",
   [Rank.Challenger]: "<:challenger:1081478869795753994>",
 };
-
-export const FirstEmoji = "⏮️";
-export const PrevEmoji = "⬅️";
-export const NextEmoji = "➡️";
-export const LastEmoji = "⏭️";
+export const readyEmoji = "✅";
+export const waitingEmoji = "🚫";

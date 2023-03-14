@@ -6,6 +6,7 @@ import {
 import DiscordClient from "../discordClient";
 import DropCards from "../commands/cardDropSlashCommand";
 import Inventory from "../commands/inventorySlashCommand";
+import Cooldowns from "../commands/cooldownSlashCommand";
 
 export interface Command {
   data: SlashCommandBuilder | SlashCommandSubcommandsOnlyBuilder;
@@ -15,4 +16,4 @@ export interface Command {
   ) => Promise<void>;
 }
 
-export const commands: Command[] = [DropCards, Inventory];
+export const commands: Command[] = [DropCards, Inventory, Cooldowns];

@@ -3,7 +3,6 @@ import { PrismaClient } from "@prisma/client";
 export * from "@prisma/client";
 require("dotenv-mono").load();
 
-console.log("this is redispassowrd", process.env.REDIS_PASSWORD);
 const globalForRedis = globalThis as unknown as {
   redis: ReturnType<typeof createClient>;
 };
