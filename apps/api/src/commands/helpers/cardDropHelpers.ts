@@ -225,9 +225,9 @@ export async function trackUserAction(
   }
   const cdInMinutes = (() => {
     if (action === UserActions.Claim) {
-      return 2;
+      return 1.5;
     } else {
-      return 5;
+      return 3;
     }
   })();
   const time = DateTime.now().plus({ minutes: cdInMinutes });
