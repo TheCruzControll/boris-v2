@@ -234,6 +234,7 @@ const DropCards: Command = {
       for (const [id, raffleEntrants] of Object.entries(uniqueButtonIds)) {
         const winnerUserid = await getWinnerUserId(raffleEntrants);
         if (winnerUserid === "") return;
+        await trackUserAction(winnerUserid, UserActions.Claim);
         const chosenSkin = skins.find((skin) => {
           return skin.mappedCustomButtonId === id;
         })!;
@@ -260,7 +261,6 @@ const DropCards: Command = {
             }${chosenSkin.rank}` + ` | \`${card.id}\`!**`
           );
         }
-        await trackUserAction(winnerUserid, UserActions.Claim);
       }
     });
   },
