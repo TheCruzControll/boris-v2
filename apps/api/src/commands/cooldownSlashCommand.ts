@@ -16,9 +16,9 @@ function generateCooldownString(
   },
   userAction: UserAction
 ) {
-  const hasCooldown = dropDuration.minutes !== 0 && dropDuration.seconds !== 0;
-  const emoji = !hasCooldown ? readyEmoji : waitingEmoji;
-  const cooldownString = !hasCooldown
+  const isReady = dropDuration.minutes <= 0 && dropDuration.seconds <= 0;
+  const emoji = isReady ? readyEmoji : waitingEmoji;
+  const cooldownString = isReady
     ? "ready"
     : `${dropDuration.minutes}m ${dropDuration.seconds}s`;
   return `**${emoji} ${userAction}: \`${cooldownString}\`**`;
