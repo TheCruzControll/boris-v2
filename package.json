@@ -12,16 +12,10 @@
     "lint": "turbo run lint",
     "test": "turbo run test"
   },
-  "prisma": {
-    "schema": "packages/database/prisma/schema.prisma"
-  },
   "devDependencies": {
     "dotenv-mono": "^1.3.10",
     "prettier": "^2.7.1",
     "turbo": "latest"
   },
-  "packageManager": "pnpm@7.15.0",
-  "dependencies": {
-    "dotenv-cli": "^7.1.0"
-  }
+  "packageManager": "pnpm@7.15.0"
 }

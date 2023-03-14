@@ -12,5 +12,3 @@ server/dist
 public/dist
 .turbo
 .idea
-.env
-!packages/database/.env
