@@ -182,6 +182,7 @@ const DropCards: Command = {
           ) as TextChannel;
 
           if (
+            uniqueButtonIds[buttonInteraction.customId] &&
             uniqueButtonIds[buttonInteraction.customId].has(
               buttonInteraction.user.id
             )
@@ -200,7 +201,7 @@ const DropCards: Command = {
             await channel.send(
               `${buttonInteraction.user.toString()} has joined the raffle for **${
                 chosenSkin.name
-              } | ${emojisToEmojiIds[chosenSkin.rank]}${chosenSkin.rank}`
+              } | ${emojisToEmojiIds[chosenSkin.rank]}${chosenSkin.rank}**`
             );
           }
         }
