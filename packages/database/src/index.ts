@@ -1,9 +1,9 @@
 import { createClient } from "redis";
 import { PrismaClient } from "@prisma/client";
 export * from "@prisma/client";
-import * as dotenv from "dotenv"; // see https://github.com/motdotla/dotenv#how-do-i-use-dotenv-with-import
-dotenv.config();
+require("dotenv-mono").load();
 
+console.log("this is redispassowrd", process.env.REDIS_PASSWORD);
 const globalForRedis = globalThis as unknown as {
   redis: ReturnType<typeof createClient>;
 };
