@@ -26,6 +26,112 @@ import {
 } from "./helpers/cardDropHelpers";
 import * as chance from "chance";
 
+async function handleComponentInteraction(
+  buttonInteraction: MessageComponentInteraction,
+  interaction: CommandInteraction,
+  client: DiscordClient,
+  uniqueButtonIds: Record<string, Set<string>>
+) {
+  if (
+    !(await canUserMakeAction(buttonInteraction.user.id, UserActions.Claim))
+  ) {
+    const cdDuration = await getCooldownDuration(
+      buttonInteraction.user.id,
+      UserActions.Claim
+    );
+    const channel = client.channels.cache.get(
+      interaction.channelId
+    ) as TextChannel;
+    if (channel) {
+      await channel.send(
+        `${buttonInteraction.user.toString()} **You must wait ${
+          cdDuration.minutes
+        }m and ${Math.floor(
+          cdDuration.seconds
+        )}s before you can claim another card**`
+      );
+    }
+    return;
+  }
+
+  const chosenSkin: CardImage | undefined = skins.find((skin) => {
+    return skin.mappedCustomButtonId === buttonInteraction.customId;
+  });
+  if (!chosenSkin) {
+    const channel = client.channels.cache.get(
+      interaction.channelId
+    ) as TextChannel;
+    if (channel) {
+      await channel.send(
+        `${buttonInteraction.user.toString()} woops, an error happened. Please try again`
+      );
+      console.log("no chosen skin");
+    }
+    return;
+  }
+
+  if (buttonInteraction.user.id === interaction.user.id) {
+    delete uniqueButtonIds[chosenSkin.mappedCustomButtonId];
+    const card = await prisma.card.create({
+      data: {
+        generation: chosenSkin.generation,
+        rank: chosenSkin.rank,
+        ownerDiscordId: buttonInteraction.user.id,
+        skin: {
+          connect: {
+            id: chosenSkin.skinId,
+          },
+        },
+      },
+    });
+    const channel = client.channels.cache.get(
+      interaction.channelId
+    ) as TextChannel;
+    if (channel) {
+      await channel.send(
+        `${buttonInteraction.user.toString()} claimed **${chosenSkin.name} | ${
+          emojisToEmojiIds[chosenSkin.rank]
+        }${chosenSkin.rank}` + ` | \`${card.id}\`!**`
+      );
+    }
+    await trackUserAction(buttonInteraction.user.id, UserActions.Claim);
+  } else {
+    const channel = client.channels.cache.get(
+      interaction.channelId
+    ) as TextChannel;
+
+    // if already claimed
+    if (!uniqueButtonIds[chosenSkin.mappedCustomButtonId]) {
+      await channel.send(
+        `${buttonInteraction.user.toString()} sorry, ${
+          chosenSkin.name
+        } is already claimed`
+      );
+      return;
+    }
+
+    // if name is already in raffle
+    if (
+      uniqueButtonIds[chosenSkin.mappedCustomButtonId].has(
+        buttonInteraction.user.id
+      )
+    ) {
+      await channel.send(
+        `${buttonInteraction.user.toString()} you can only have one raffle entru`
+      );
+      return;
+    }
+    uniqueButtonIds[buttonInteraction.customId].add(buttonInteraction.user.id);
+    if (channel) {
+      await channel.send(
+        `${buttonInteraction.user.toString()} has joined the raffle for **${
+          chosenSkin.name
+        } | ${emojisToEmojiIds[chosenSkin.rank]}${chosenSkin.rank}**`
+      );
+    }
+  }
+}
+
 const DropCards: Command = {
   data: new SlashCommandBuilder().setName("drop").setDescription("Drop Cards"),
   run: async (interaction: CommandInteraction, client: DiscordClient) => {
@@ -104,114 +210,12 @@ const DropCards: Command = {
     collector.on(
       "collect",
       async (buttonInteraction: MessageComponentInteraction) => {
-        /*
-        in here only check for the value of the button id for the user that initiated the interaction
-        aka: buttonInteraction.user.id === interaction.user.id
-      */
-        if (
-          !(await canUserMakeAction(
-            buttonInteraction.user.id,
-            UserActions.Claim
-          ))
-        ) {
-          const cdDuration = await getCooldownDuration(
-            buttonInteraction.user.id,
-            UserActions.Claim
-          );
-          const channel = client.channels.cache.get(
-            interaction.channelId
-          ) as TextChannel;
-          if (channel) {
-            await channel.send(
-              `${buttonInteraction.user.toString()} **You must wait ${
-                cdDuration.minutes
-              }m and ${Math.floor(
-                cdDuration.seconds
-              )}s before you can claim another card**`
-            );
-          }
-          return;
-        }
-
-        const chosenSkin: CardImage | undefined = skins.find((skin) => {
-          return skin.mappedCustomButtonId === buttonInteraction.customId;
-        });
-        if (!chosenSkin) {
-          const channel = client.channels.cache.get(
-            interaction.channelId
-          ) as TextChannel;
-          if (channel) {
-            await channel.send(
-              `${buttonInteraction.user.toString()} woops, an error happened. Please try again`
-            );
-            console.log("no chosen skin");
-          }
-          return;
-        }
-
-        if (buttonInteraction.user.id === interaction.user.id) {
-          delete uniqueButtonIds[chosenSkin.mappedCustomButtonId];
-          const card = await prisma.card.create({
-            data: {
-              generation: chosenSkin.generation,
-              rank: chosenSkin.rank,
-              ownerDiscordId: buttonInteraction.user.id,
-              skin: {
-                connect: {
-                  id: chosenSkin.skinId,
-                },
-              },
-            },
-          });
-          const channel = client.channels.cache.get(
-            interaction.channelId
-          ) as TextChannel;
-          if (channel) {
-            await channel.send(
-              `${buttonInteraction.user.toString()} claimed **${
-                chosenSkin.name
-              } | ${emojisToEmojiIds[chosenSkin.rank]}${chosenSkin.rank}` +
-                ` | \`${card.id}\`!**`
-            );
-          }
-          await trackUserAction(buttonInteraction.user.id, UserActions.Claim);
-        } else {
-          const channel = client.channels.cache.get(
-            interaction.channelId
-          ) as TextChannel;
-
-          // if already claimed
-          if (!uniqueButtonIds[chosenSkin.mappedCustomButtonId]) {
-            await channel.send(
-              `${buttonInteraction.user.toString()} sorry, ${
-                chosenSkin.name
-              } is already claimed`
-            );
-            return;
-          }
-
-          // if name is already in raffle
-          if (
-            uniqueButtonIds[chosenSkin.mappedCustomButtonId].has(
-              buttonInteraction.user.id
-            )
-          ) {
-            await channel.send(
-              `${buttonInteraction.user.toString()} you can only have one raffle entru`
-            );
-            return;
-          }
-          uniqueButtonIds[buttonInteraction.customId].add(
-            buttonInteraction.user.id
-          );
-          if (channel) {
-            await channel.send(
-              `${buttonInteraction.user.toString()} has joined the raffle for **${
-                chosenSkin.name
-              } | ${emojisToEmojiIds[chosenSkin.rank]}${chosenSkin.rank}**`
-            );
-          }
-        }
+        await handleComponentInteraction(
+          buttonInteraction,
+          interaction,
+          client,
+          uniqueButtonIds
+        );
         await buttonInteraction.deferUpdate();
       }
     );
