@@ -247,7 +247,10 @@ const DropCards: Command = {
 
       for (const [id, raffleEntrants] of Object.entries(uniqueButtonIds)) {
         const winnerUserid = await getWinnerUserId(raffleEntrants);
-        if (winnerUserid === "") return;
+        if (winnerUserid === "") {
+          console.log("no winners for raffle entrants", raffleEntrants);
+          return;
+        }
         await trackUserAction(winnerUserid, UserActions.Claim);
         const chosenSkin = cardImages.find((cardImage) => {
           return cardImage.mappedCustomButtonId === id;
@@ -282,8 +285,10 @@ const DropCards: Command = {
 
 async function getWinnerUserId(raffleEntrants: Set<string>): Promise<string> {
   if (raffleEntrants.size === 0) return "";
-  const pickedUserId = getChance().pickone(Array.from(raffleEntrants));
+  const random = Math.floor(Math.random() * raffleEntrants.size);
+  const pickedUserId = Array.from(raffleEntrants)[random];
   if (await canUserMakeAction(pickedUserId, UserActions.Claim)) {
+    console.log("pickedUserId could not make a claim", pickedUserId);
     return pickedUserId;
   }
   raffleEntrants.delete(pickedUserId);
