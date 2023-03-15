@@ -127,8 +127,7 @@ export async function drawImages(cards: CardImage[]): Promise<Buffer> {
       // Text
       ctx.fillStyle = "rgba(255,255,255,1)";
       ctx.font = 'bold 20pt "Beaufort"';
-      const fillTextName =
-        cards[i].name === "default" ? cards[i].championName : cards[i].name;
+      const fillTextName = cards[i].name;
       ctx.fillText(
         fillTextName,
         skinXPosition + borderWidth / 2,
@@ -159,8 +158,7 @@ export async function drawImages(cards: CardImage[]): Promise<Buffer> {
       // Text
       ctx.fillStyle = "rgba(255,255,255,1)";
       ctx.font = 'bold 20pt "Beaufort"';
-      const fillTextName =
-        cards[i].name === "default" ? cards[i].championName : cards[i].name;
+      const fillTextName = cards[i].name;
       ctx.fillText(
         fillTextName,
         skinXPosition + borderWidth / 2,
@@ -224,6 +222,9 @@ export async function trackUserAction(
     return;
   }
   const cdInMinutes = (() => {
+    if (DateTime.now().weekdayLong === "Saturday") {
+      return 1;
+    }
     if (action === UserActions.Claim) {
       return 1.5;
     } else {

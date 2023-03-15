@@ -29,7 +29,9 @@ client
   });
 registerListeners(client);
 
-redis.on("error", (err: any) => console.log("Redis Client Error", err));
+redis.on("error", (err) => {
+  return console.log("Redis Client Error", err);
+});
 redis
   .connect()
   .then(() => {

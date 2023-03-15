@@ -57,6 +57,7 @@ async function handleComponentInteraction(
   const chosenSkin: CardImage | undefined = cardImages.find((cardImage) => {
     return cardImage.mappedCustomButtonId === buttonInteraction.customId;
   });
+
   if (!chosenSkin) {
     const channel = client.channels.cache.get(
       interaction.channelId
@@ -83,6 +84,7 @@ async function handleComponentInteraction(
             },
             create: {
               id: buttonInteraction.user.id,
+              balance: 0,
             },
           },
         },
@@ -283,6 +285,7 @@ const DropCards: Command = {
                 },
                 create: {
                   id: winnerUserid,
+                  balance: 0,
                 },
               },
             },

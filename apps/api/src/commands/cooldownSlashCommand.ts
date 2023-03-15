@@ -28,7 +28,7 @@ const Cooldowns: Command = {
   data: new SlashCommandBuilder()
     .setName("cd")
     .setDescription("Show all Cooldowns"),
-  run: async (interaction: CommandInteraction, client: DiscordClient) => {
+  run: async (interaction: CommandInteraction, _client: DiscordClient) => {
     const dropDuration = await getCooldownDuration(
       interaction.user.id,
       UserActions.Drop
