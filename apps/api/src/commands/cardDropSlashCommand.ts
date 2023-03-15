@@ -24,13 +24,13 @@ import {
   getCooldownDuration,
   trackUserAction,
 } from "./helpers/cardDropHelpers";
-import * as chance from "chance";
 
 async function handleComponentInteraction(
   buttonInteraction: MessageComponentInteraction,
   interaction: CommandInteraction,
   client: DiscordClient,
-  uniqueButtonIds: Record<string, Set<string>>
+  uniqueButtonIds: Record<string, Set<string>>,
+  cardImages: CardImage[]
 ) {
   if (
     !(await canUserMakeAction(buttonInteraction.user.id, UserActions.Claim))
@@ -54,8 +54,8 @@ async function handleComponentInteraction(
     return;
   }
 
-  const chosenSkin: CardImage | undefined = skins.find((skin) => {
-    return skin.mappedCustomButtonId === buttonInteraction.customId;
+  const chosenSkin: CardImage | undefined = cardImages.find((cardImage) => {
+    return cardImage.mappedCustomButtonId === buttonInteraction.customId;
   });
   if (!chosenSkin) {
     const channel = client.channels.cache.get(
@@ -188,11 +188,11 @@ const DropCards: Command = {
       prisma.skin.findFirst({ skip: skips[1] }),
       prisma.skin.findFirst({ skip: skips[2] }),
     ]);
-    const skins = createCards(
+    const cardImages = createCards(
       [buttonIds[0], buttonIds[1], buttonIds[2]],
       skinsFromDb
     );
-    const images = await drawImages(skins);
+    const images = await drawImages(cardImages);
     const attachment = new AttachmentBuilder(images);
 
     const message = await interaction.editReply({
@@ -214,7 +214,8 @@ const DropCards: Command = {
           buttonInteraction,
           interaction,
           client,
-          uniqueButtonIds
+          uniqueButtonIds,
+          cardImages
         );
         await buttonInteraction.deferUpdate();
       }
@@ -248,8 +249,8 @@ const DropCards: Command = {
         const winnerUserid = await getWinnerUserId(raffleEntrants);
         if (winnerUserid === "") return;
         await trackUserAction(winnerUserid, UserActions.Claim);
-        const chosenSkin = skins.find((skin) => {
-          return skin.mappedCustomButtonId === id;
+        const chosenSkin = cardImages.find((cardImage) => {
+          return cardImage.mappedCustomButtonId === id;
         })!;
 
         const card = await prisma.card.create({
