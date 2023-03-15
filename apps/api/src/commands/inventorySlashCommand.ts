@@ -44,13 +44,10 @@ const Inventory: Command = {
         return;
       case "user":
         const user = interaction.options.getUser("username");
-        if (!user) {
-          console.log("theres no user in here with that username");
-        }
-        await getAllCards(user!, interaction);
+        await getAllCards(user!, interaction, client);
         return;
       case "self":
-        await getAllCards(interaction.user, interaction);
+        await getAllCards(interaction.user, interaction, client);
         return;
     }
   },

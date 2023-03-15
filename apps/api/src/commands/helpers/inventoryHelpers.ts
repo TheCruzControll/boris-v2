@@ -1,7 +1,11 @@
 import {
+  ActionRowBuilder,
   AttachmentBuilder,
   CommandInteraction,
   EmbedBuilder,
+  Events,
+  SelectMenuComponentOptionData,
+  StringSelectMenuBuilder,
   TextChannel,
   User,
 } from "discord.js";
@@ -105,26 +109,79 @@ function buildEmbedFieldString(
   });
 }
 
-export async function getAllCards(
+const inventorySortingDropdownOptions: SelectMenuComponentOptionData[] = [
+  {
+    label: "ID (asc)",
+    description: "Sort by ID ascending",
+    value: "id:asc",
+  },
+  {
+    label: "ID (desc)",
+    description: "Sort by ID descending",
+    value: "id:desc",
+  },
+  {
+    label: "Gen (asc)",
+    description: "Sort by Gen ascending",
+    value: "generation:asc",
+  },
+  {
+    label: "Gen (desc)",
+    description: "Sort by Gen descending",
+    value: "generation:desc",
+  },
+  {
+    label: "Rank (asc)",
+    description: "Sort by Rank ascending",
+    value: "rank:asc",
+  },
+  {
+    label: "Rank (desc)",
+    description: "Sort by Rank descending",
+    value: "rank:desc",
+  },
+  {
+    label: "Mastery Points (asc)",
+    description: "Sort by Mastery Points ascending",
+    value: "masteryPoints:asc",
+  },
+  {
+    label: "Mastery Points (desc)",
+    description: "Sort by Mastery Points descending",
+    value: "masteryPoints:desc",
+  },
+  {
+    label: "Mastery Rank (asc)",
+    description: "Sort by Mastery Rank ascending",
+    value: "masteryRank:asc",
+  },
+  {
+    label: "Mastery Rank (desc)",
+    description: "Sort by Mastery Rank descending",
+    value: "masteryRank:desc",
+  },
+  {
+    label: "Champion Name (asc)",
+    description: "Sort by Champion Name ascending",
+    value: "championName:asc",
+  },
+  {
+    label: "Champion Name (desc)",
+    description: "Sort by Champion Name descending",
+    value: "championName:desc",
+  },
+  /*
+   NOTE: IF SORTING BASED OFF OF SKIN FIELDS. YOU HAVE TO EDIT THE GET SORTED CARDS QUERY
+   TODO: Sorting based off of skin line
+   */
+];
+
+async function setEmbedsFromCards(
+  cards: Array<Card & { skin: Skin }>,
+  pagination: Pagination,
   user: User,
-  interaction: CommandInteraction
+  sortingOption: SelectMenuComponentOptionData
 ): Promise<void> {
-  const cards = await prisma.card.findMany({
-    where: {
-      ownerDiscordId: user.id,
-    },
-    include: {
-      skin: true,
-    },
-    orderBy: {
-      id: "asc",
-    },
-  });
-  const embeds = [];
-
-  // @ts-ignore
-  const pagination = new Pagination(interaction);
-
   function paginate<T>(
     array: Array<T>,
     page_size: number,
@@ -134,30 +191,109 @@ export async function getAllCards(
     return array.slice((page_number - 1) * page_size, page_number * page_size);
   }
 
+  const embeds = [];
   const pages = Math.ceil(cards.length / 10);
 
   for (let i = 0; i < pages; i++) {
     const paginatedCards: Array<Card & { skin: Skin }> = paginate<
       Card & { skin: Skin }
     >(cards, 10, i + 1);
-    const newEmbed = new EmbedBuilder()
-      .setTitle(`Card Details`)
-      .setDescription(`Cards owned by ${user.toString()}`)
-      .addFields(buildEmbedFieldString(paginatedCards));
+    const newEmbed = new EmbedBuilder().addFields(
+      buildEmbedFieldString(paginatedCards)
+    );
     embeds.push(newEmbed);
   }
 
-  pagination.setEmbeds(embeds);
-  // or if you want to set a common change in all embeds, you can do it by adding a cb.
-  pagination.setEmbeds(
-    embeds,
-    (
-      embed: { setFooter: (arg0: { text: string }) => any },
-      index: number,
-      array: string | any[]
-    ) => {
-      return embed.setFooter({ text: `Page: ${index + 1}/${array.length}` });
-    }
+  pagination.setEmbeds(embeds, (embed, index, array) => {
+    return embed
+      .setDescription(`Cards owned by ${user.toString()}`)
+      .setTitle(`Card Details sorted by ${sortingOption!.label}`)
+      .setFooter({ text: `Page: ${index + 1}/${array.length}` });
+  });
+}
+
+export async function getAllCards(
+  user: User,
+  interaction: CommandInteraction,
+  client: DiscordClient
+): Promise<void> {
+  const cards = await getSortedCards({
+    field: "id",
+    sorting: "asc",
+    userId: user.id,
+  });
+
+  // @ts-ignore
+  const pagination = new Pagination(interaction);
+
+  await setEmbedsFromCards(
+    cards,
+    pagination,
+    user,
+    inventorySortingDropdownOptions[0]
   );
-  await pagination.render();
+  const sortDropdownId = uuid.v4();
+  const dropdownActionRow =
+    new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(
+      new StringSelectMenuBuilder()
+        .setCustomId(sortDropdownId)
+        .setPlaceholder("Choose sorting")
+        .addOptions(inventorySortingDropdownOptions)
+    );
+  pagination.addActionRows([dropdownActionRow]);
+
+  const payloads = pagination.ready();
+  const message = await interaction.followUp(payloads);
+  pagination.paginate(message);
+
+  client.on(Events.InteractionCreate, async (stringMenuInteraction) => {
+    if (
+      !stringMenuInteraction.isStringSelectMenu() ||
+      stringMenuInteraction.customId !== sortDropdownId
+    )
+      return;
+    const interactionValue = stringMenuInteraction.values[0];
+    const [field, sorting] = interactionValue.split(":");
+    const sortingOption = inventorySortingDropdownOptions.find((option) => {
+      return option.value === interactionValue;
+    });
+    const newSortedCards = await getSortedCards({
+      field,
+      sorting,
+      userId: user.id,
+    });
+
+    await setEmbedsFromCards(newSortedCards, pagination, user, sortingOption!);
+
+    const payloads = pagination.ready();
+    await message.edit(payloads);
+    await stringMenuInteraction.deferUpdate();
+  });
+}
+
+async function getSortedCards(options: {
+  field: string;
+  sorting: string;
+  userId: string;
+}): Promise<Array<Card & { skin: Skin }>> {
+  const { field, sorting, userId } = options;
+  const orderBy =
+    field === "championName"
+      ? {
+          skin: {
+            [field]: sorting,
+          },
+        }
+      : { [field]: sorting };
+  // @ts-ignore
+  return await prisma.card.findMany({
+    where: {
+      ownerDiscordId: userId,
+    },
+    include: {
+      skin: true,
+    },
+    // @ts-ignore
+    orderBy,
+  });
 }
