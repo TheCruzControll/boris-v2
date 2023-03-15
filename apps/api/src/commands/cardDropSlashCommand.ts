@@ -256,8 +256,7 @@ const DropCards: Command = {
         );
         const winnerUserid = await getWinnerUserId(raffleEntrants);
         if (winnerUserid === "") {
-          console.log("no winners for raffle entrants", raffleEntrants);
-          return;
+          continue;
         }
         await trackUserAction(winnerUserid, UserActions.Claim);
         const chosenSkin = cardImages.find((cardImage) => {
