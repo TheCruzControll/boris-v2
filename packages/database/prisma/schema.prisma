@@ -10,15 +10,22 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id      String @id
+  balance Int    @default(0)
+  cards   Card[]
+}
+
 model Card {
-  id             Int    @id @default(autoincrement())
-  generation     Int
-  rank           Rank
-  ownerDiscordId String
-  masteryPoints  Int    @default(0)
-  masteryRank    Int    @default(1)
-  skin           Skin   @relation(fields: [skinId], references: [id])
-  skinId         Int
+  id            Int    @id @default(autoincrement())
+  generation    Int
+  rank          Rank
+  masteryPoints Int    @default(0)
+  masteryRank   Int    @default(1)
+  skin          Skin   @relation(fields: [skinId], references: [id])
+  skinId        Int
+  user          User   @relation(fields: [userId], references: [id])
+  userId        String @default("")
 }
 
 model Skin {

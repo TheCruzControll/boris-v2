@@ -22,6 +22,9 @@ export async function getSingleCard(
   client: DiscordClient
 ): Promise<void> {
   const cardFromDb = await prisma.card.findFirst({
+    include: {
+      user: true,
+    },
     where: {
       id: parseInt(cardId),
     },
@@ -68,11 +71,10 @@ export async function getSingleCard(
   const images = await drawImages(skins);
   const file = new AttachmentBuilder(images).setFile(images, "name.png");
 
-  const { id, generation, rank, masteryPoints, masteryRank, ownerDiscordId } =
-    cardFromDb;
+  const { id, generation, rank, masteryPoints, masteryRank, user } = cardFromDb;
   const exampleEmbed = new EmbedBuilder()
     .setTitle("Card Details")
-    .setDescription(`Owned by <@${ownerDiscordId}>`)
+    .setDescription(`Owned by <@${user.id}>`)
     .setImage("attachment://name.png")
     .addFields(
       { name: "Id", value: id.toString() },
@@ -287,11 +289,14 @@ async function getSortedCards(options: {
       : { [field]: sorting };
   // @ts-ignore
   return await prisma.card.findMany({
-    where: {
-      ownerDiscordId: userId,
-    },
     include: {
       skin: true,
+      user: true,
+    },
+    where: {
+      user: {
+        id: userId,
+      },
     },
     // @ts-ignore
     orderBy,

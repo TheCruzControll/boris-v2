@@ -6,7 +6,8 @@
     "build": "tsup src/index.ts --format cjs",
     "dev": "npm run build -- --watch",
     "db:generate": "dotenv -e ../../.env -- prisma generate",
-    "db:push": "prisma db push --skip-generate"
+    "db:push": "dotenv -e ../../.env -- prisma db push",
+    "db:studio": "dotenv -e ../../.env -- prisma studio"
   },
   "keywords": [],
   "author": "",

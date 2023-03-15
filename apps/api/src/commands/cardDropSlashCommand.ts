@@ -76,7 +76,16 @@ async function handleComponentInteraction(
       data: {
         generation: chosenSkin.generation,
         rank: chosenSkin.rank,
-        ownerDiscordId: buttonInteraction.user.id,
+        user: {
+          connectOrCreate: {
+            where: {
+              id: buttonInteraction.user.id,
+            },
+            create: {
+              id: buttonInteraction.user.id,
+            },
+          },
+        },
         skin: {
           connect: {
             id: chosenSkin.skinId,
@@ -267,7 +276,16 @@ const DropCards: Command = {
           data: {
             generation: chosenSkin.generation,
             rank: chosenSkin.rank,
-            ownerDiscordId: winnerUserid,
+            user: {
+              connectOrCreate: {
+                where: {
+                  id: winnerUserid,
+                },
+                create: {
+                  id: winnerUserid,
+                },
+              },
+            },
             skin: {
               connect: {
                 id: chosenSkin.skinId,
