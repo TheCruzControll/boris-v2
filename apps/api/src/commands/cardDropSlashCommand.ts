@@ -104,7 +104,6 @@ const DropCards: Command = {
     collector.on(
       "collect",
       async (buttonInteraction: MessageComponentInteraction) => {
-        await buttonInteraction.deferUpdate();
         /*
         in here only check for the value of the button id for the user that initiated the interaction
         aka: buttonInteraction.user.id === interaction.user.id
@@ -213,6 +212,7 @@ const DropCards: Command = {
             );
           }
         }
+        await buttonInteraction.deferUpdate();
       }
     );
 
