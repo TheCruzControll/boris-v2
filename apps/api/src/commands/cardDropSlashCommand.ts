@@ -246,6 +246,14 @@ const DropCards: Command = {
       });
 
       for (const [id, raffleEntrants] of Object.entries(uniqueButtonIds)) {
+        const temp = cardImages.find((cardImage) => {
+          return cardImage.mappedCustomButtonId === id;
+        })!;
+        console.log(
+          "getting raffle winner for card",
+          temp.name,
+          raffleEntrants
+        );
         const winnerUserid = await getWinnerUserId(raffleEntrants);
         if (winnerUserid === "") {
           console.log("no winners for raffle entrants", raffleEntrants);
