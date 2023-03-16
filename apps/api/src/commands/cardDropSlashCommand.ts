@@ -164,6 +164,9 @@ const DropCards: Command = {
       }
       return;
     }
+    // Tracking earlier now to prevent people from spamming the drop command
+    await trackUserAction(interaction.user.id, UserActions.Drop);
+
     const buttonIds = new Array(3).fill("").map(() => {
       return v4();
     });
@@ -211,7 +214,6 @@ const DropCards: Command = {
       files: [attachment],
       components: [row],
     });
-    await trackUserAction(interaction.user.id, UserActions.Drop);
 
     const interactionTime = Duration.fromObject({ seconds: 30 });
     const collector = message.createMessageComponentCollector({
