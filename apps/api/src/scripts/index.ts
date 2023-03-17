@@ -1,3 +1,6 @@
+import { DDragon } from "@fightmegg/riot-api";
+import { ChampionName, prisma, Skin } from "database";
+
 async function run() {
   // const maliaId = "570740201564012546";
   // const skins:Card[]=[{
@@ -35,42 +38,24 @@ async function run() {
   //     championName: ChampionName.Wukong,
   //   },
   // });
+  // const skinsToPush = [];
   // const ddragon = new DDragon();
   // for (const championName of Object.values(ChampionName)) {
-  // const temp = await prisma.skin.updateMany({
-  //   where: {
-  //     name: "default",
-  //   },
-  //   data: {
-  //     championName: championName as ChampionName,
-  //   },
-  // });
-  // console.log(temp);
-  // const champ = await ddragon.champion.byName({ championName });
-  // const { data } = champ;
-  // skinUpdatesToPush.push(championName)
-  // const skins = data[championName].skins;
-  // for (const skin of skins) {
-  //   if (skin.name === "default") {
-  //     await prisma.skin.update({
-  //       where: {
-  //         id: parseInt(skin.id),
-  //       },
-  //       data: {
-  //         name: championName,
-  //         championName,
-  //       },
-  //     });
+  //   const champ = await ddragon.champion.byName({ championName });
+  //   const { data } = champ;
+  //   // skinUpdatesToPush.push(championName);
+  //   const skins = data[championName].skins;
+  //   for (const skin of skins) {
+  //     const assetUrl = `http://ddragon.leagueoflegends.com/cdn/img/champion/loading/${championName}_${skin.num}.jpg`;
+  //     const skinToCreate: Skin = {
+  //       id: parseInt(skin.id),
+  //       name: skin.name,
+  //       championName,
+  //       asset: assetUrl,
+  //     };
+  //     console.log(championName, assetUrl);
+  //     skinsToPush.push(skinToCreate);
   //   }
-  // const assetUrl = `http://ddragon.leagueoflegends.com/cdn/img/champion/loading/${championName}_${skin.num}.jpg`;
-  // const skinToCreate: Skin = {
-  //   id: parseInt(skin.id),
-  //   name: skin.name,
-  //   championName,
-  //   asset: assetUrl,
-  // };
-  // skinsToPush.push(skinToCreate);
-  // }
   // }
   // await prisma.skin.createMany({ data: skinsToPush });
 }

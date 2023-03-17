@@ -1,6 +1,10 @@
+export * from "@prisma/client";
+
+export * from "./cardService";
+export * from "./userService";
+
 import { createClient } from "redis";
 import { PrismaClient } from "@prisma/client";
-export * from "@prisma/client";
 require("dotenv-mono").load();
 
 const globalForRedis = globalThis as unknown as {

@@ -1,8 +1,4 @@
-import {
-  REST,
-  RESTPostAPIChatInputApplicationCommandsJSONBody,
-  Routes,
-} from "discord.js";
+import { REST, Routes } from "discord.js";
 import { commands } from "./types/command";
 
 const registerSlashCommands = async () => {

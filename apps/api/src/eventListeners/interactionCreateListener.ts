@@ -30,6 +30,7 @@ const handleSlashCommand = async (
     await interaction.followUp({
       content: `${interaction.user.toString()} woops, an error happened. Please try again.`,
     });
+    console.log(err);
     return;
   }
 };

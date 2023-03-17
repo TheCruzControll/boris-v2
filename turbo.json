@@ -41,7 +41,7 @@
         "^db:generate",
         "^build"
       ]
-     },
+    },
     "seed-db": {
       "dependsOn": [
         "^db:generate",

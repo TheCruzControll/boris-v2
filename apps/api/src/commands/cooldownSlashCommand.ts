@@ -1,6 +1,6 @@
 import { Command } from "../types/command";
 import {
-  CommandInteraction,
+  ChatInputCommandInteraction,
   EmbedBuilder,
   SlashCommandBuilder,
 } from "discord.js";
@@ -8,6 +8,7 @@ import DiscordClient from "../discordClient";
 import { getCooldownDuration } from "./helpers/cardDropHelpers";
 import { UserAction, UserActions } from "../types/users";
 import { readyEmoji, waitingEmoji } from "../types/emoji";
+import { Colors } from "../types/colors";
 
 function generateCooldownString(
   dropDuration: {
@@ -28,7 +29,10 @@ const Cooldowns: Command = {
   data: new SlashCommandBuilder()
     .setName("cd")
     .setDescription("Show all Cooldowns"),
-  run: async (interaction: CommandInteraction, _client: DiscordClient) => {
+  run: async (
+    interaction: ChatInputCommandInteraction,
+    _client: DiscordClient
+  ) => {
     const dropDuration = await getCooldownDuration(
       interaction.user.id,
       UserActions.Drop
@@ -56,7 +60,8 @@ const Cooldowns: Command = {
           name: "\u200B",
           value: claimString,
         }
-      );
+      )
+      .setColor(Colors.Gold4);
     await interaction.followUp({ embeds: [embed] });
   },
 };

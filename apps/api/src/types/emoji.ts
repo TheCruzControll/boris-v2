@@ -11,5 +11,7 @@ export const emojisToEmojiIds: Record<Rank, string> = {
   [Rank.Grandmaster]: "<:grandmaster:1081478873490931782>",
   [Rank.Challenger]: "<:challenger:1081478869795753994>",
 };
+
 export const readyEmoji = "✅";
 export const waitingEmoji = "🚫";
+export const blueEssenceEmoji = "<:blue_essence:1085804840191528990>";

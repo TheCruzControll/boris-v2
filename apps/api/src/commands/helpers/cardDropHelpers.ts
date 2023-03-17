@@ -14,13 +14,14 @@ export interface CardImage {
   championName: string;
   mappedCustomButtonId: string;
 }
+
+const genArray = Array.from(Array(2000).keys());
 /*
   Each number is weighted based off of their number
     i.e 1 has 1 entry. 100 has 100 entries etc.
  */
 export function getGeneration(): number {
-  const arr = Array.from(Array(2000).keys());
-  return getChance().weighted(arr, arr);
+  return getChance().weighted(genArray, genArray);
 }
 
 export function getRank(): Rank {

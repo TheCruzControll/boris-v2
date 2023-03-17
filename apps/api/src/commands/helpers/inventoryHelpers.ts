@@ -15,6 +15,7 @@ import { drawImages } from "./cardDropHelpers";
 import { emojisToEmojiIds } from "../../types/emoji";
 import { Pagination } from "pagination.djs";
 import { Card, prisma, Skin } from "database";
+import { Colors } from "../../types/colors";
 
 export async function getSingleCard(
   cardId: string,
@@ -24,6 +25,7 @@ export async function getSingleCard(
   const cardFromDb = await prisma.card.findFirst({
     include: {
       user: true,
+      skin: true,
     },
     where: {
       id: parseInt(cardId),
@@ -39,52 +41,43 @@ export async function getSingleCard(
     }
     return;
   }
-  const skinFromDb = await prisma.skin.findFirst({
-    where: {
-      id: cardFromDb.skinId,
-    },
-  });
-  if (!skinFromDb) {
-    await interaction.deleteReply();
-    const channel = client.channels.cache.get(
-      interaction.channelId
-    ) as TextChannel;
-    if (channel) {
-      await channel.send(
-        `${interaction.user.toString()} Could not find your card with ID ${cardId}`
-      );
-    }
-    return;
-  }
+  const { skin } = cardFromDb;
 
   const skins = [
     {
-      skinId: skinFromDb.id,
+      skinId: skin.id,
       generation: cardFromDb.generation,
-      name: skinFromDb.name,
-      url: skinFromDb.asset,
+      name: skin.name,
+      url: skin.asset,
       rank: cardFromDb.rank,
-      championName: skinFromDb.championName,
+      championName: skin.championName,
       mappedCustomButtonId: uuid.v4(),
     },
   ];
   const images = await drawImages(skins);
-  const file = new AttachmentBuilder(images).setFile(images, "name.png");
+  const file = new AttachmentBuilder(images).setName("card.png");
 
   const { id, generation, rank, masteryPoints, masteryRank, user } = cardFromDb;
   const exampleEmbed = new EmbedBuilder()
     .setTitle("Card Details")
     .setDescription(`Owned by <@${user.id}>`)
-    .setImage("attachment://name.png")
-    .addFields(
-      { name: "Id", value: id.toString() },
-      { name: "Generation", value: generation.toString() },
-      { name: "Rank", value: `${rank}${emojisToEmojiIds[rank]}` },
-      { name: "Mastery Points", value: masteryPoints.toString() },
-      { name: "Mastery Rank", value: masteryRank.toString() }
-    );
+    .setImage("attachment://card.png")
+    .addFields({
+      name: "\u200B",
+      value: `*Name*: **${skin.name}** \n 
+*Id*: **${id.toString()}** \n
+*Generation*: **${generation.toString()}** \n
+*Rank*: **${rank.toString()}${emojisToEmojiIds[rank]}** \n
+*Mastery Points*: **${masteryPoints.toString()}** \n
+*Mastery Rank*: **${masteryRank.toString()}**
+`,
+    })
+    .setColor(Colors.Gold4);
 
-  await interaction.followUp({ embeds: [exampleEmbed], files: [file] });
+  await interaction.followUp({
+    embeds: [exampleEmbed],
+    files: [file],
+  });
 }
 
 const PaginationActions = {
@@ -200,9 +193,9 @@ async function setEmbedsFromCards(
     const paginatedCards: Array<Card & { skin: Skin }> = paginate<
       Card & { skin: Skin }
     >(cards, 10, i + 1);
-    const newEmbed = new EmbedBuilder().addFields(
-      buildEmbedFieldString(paginatedCards)
-    );
+    const newEmbed = new EmbedBuilder()
+      .addFields(buildEmbedFieldString(paginatedCards))
+      .setColor(Colors.Gold4);
     embeds.push(newEmbed);
   }
 

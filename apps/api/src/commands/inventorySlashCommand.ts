@@ -1,4 +1,10 @@
-import { CommandInteraction, SlashCommandBuilder } from "discord.js";
+import {
+  ChatInputCommandInteraction,
+  CommandInteraction,
+  SlashCommandBuilder,
+  TextChannel,
+} from "discord.js";
+import { intersection } from "lodash";
 import DiscordClient from "../discordClient";
 import { Command } from "../types/command";
 import { getAllCards, getSingleCard } from "./helpers/inventoryHelpers";
@@ -29,24 +35,28 @@ const Inventory: Command = {
     .addSubcommand((subcommand) =>
       subcommand.setName("self").setDescription("View inventory of self")
     ),
-  run: async (interaction: CommandInteraction, client: DiscordClient) => {
-    // this is weird typing, Command interaction does have options.getSubcommand but the omit messes stuff up
-    // @ts-ignore
+  run: async (
+    interaction: ChatInputCommandInteraction,
+    client: DiscordClient
+  ) => {
     switch (interaction.options.getSubcommand()) {
       case "card":
-        await getSingleCard(
-          // @ts-ignore
-          // this is weird typing, Command interaction does have options.getString but the omit messes stuff up
-          interaction.options.getString("cardid"),
-          interaction,
-          client
-        );
+        const cardid = interaction.options.getString("cardid");
+        if (!cardid) {
+          const channel = client.channels.cache.get(
+            interaction.channelId
+          ) as TextChannel;
+          await channel.send(
+            `${interaction.user.toString()} no card id provided`
+          );
+        }
+        await getSingleCard(cardid!, interaction, client);
         return;
       case "user":
         const user = interaction.options.getUser("username");
         await getAllCards(user!, interaction, client);
         return;
-      case "self":
+      default:
         await getAllCards(interaction.user, interaction, client);
         return;
     }

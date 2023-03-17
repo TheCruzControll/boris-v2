@@ -3,6 +3,7 @@ import { redis } from "database";
 import DiscordClient from "./discordClient";
 import registerListeners from "./registerListeners";
 import registerSlashCommands from "./registerSlashCommands";
+
 require("dotenv-mono").load();
 
 registerSlashCommands()
