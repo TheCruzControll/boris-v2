@@ -1,4 +1,5 @@
-import { prisma, User } from ".";
+import { User } from "@prisma/client";
+import { prisma } from "./index";
 
 export async function addBalanceToUser(
   userId: string,
