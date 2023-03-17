@@ -1,5 +1,4 @@
-import { Card, Skin } from "@prisma/client";
-import { prisma } from "./index";
+import { Card, prisma, Skin } from ".";
 
 export async function getUserCard(
   userId: string,
