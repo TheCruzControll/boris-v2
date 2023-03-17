@@ -1,6 +1,5 @@
 import { createClient } from "redis";
 import { PrismaClient } from "@prisma/client";
-
 export * from "@prisma/client";
 
 require("dotenv-mono").load();
