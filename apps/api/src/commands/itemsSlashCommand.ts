@@ -1,10 +1,10 @@
-import { getUser, createUser } from "database";
 import {
   CommandInteraction,
   EmbedBuilder,
   SlashCommandBuilder,
 } from "discord.js";
 import DiscordClient from "../discordClient";
+import { createUser, getUser } from "../services/userService";
 import { Colors } from "../types/colors";
 import { Command } from "../types/command";
 import { blueEssenceEmoji } from "../types/emoji";

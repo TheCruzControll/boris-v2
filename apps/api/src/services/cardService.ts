@@ -1,4 +1,4 @@
-import { Card, prisma, Skin } from ".";
+import { Card, prisma, Skin } from "database";
 
 export async function getUserCard(
   userId: string,

@@ -3,7 +3,7 @@
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "scripts": {
-    "build": "tsup --format cjs --dts",
+    "build": "tsup src/index.ts --format cjs",
     "dev": "npm run build -- --watch",
     "db:generate": "dotenv -e ../../.env -- prisma generate",
     "db:push": "dotenv -e ../../.env -- prisma db push",

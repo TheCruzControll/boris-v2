@@ -16,13 +16,9 @@ import { drawImages } from "./cardDropHelpers";
 import { Duration } from "luxon";
 import { sendMessageToChannel } from "./sharedHelpers";
 import { blueEssenceEmoji, emojisToEmojiIds } from "../../types/emoji";
-import {
-  addBalanceToUser,
-  Card,
-  deleteCard,
-  getUserCard,
-  Rank,
-} from "database";
+import { Card, Rank } from "database";
+import { deleteCard, getUserCard } from "../../services/cardService";
+import { addBalanceToUser } from "../../services/userService";
 
 export async function startBurnCardWorkflow(
   interaction: ChatInputCommandInteraction,

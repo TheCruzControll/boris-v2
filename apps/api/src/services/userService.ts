@@ -1,4 +1,4 @@
-import { prisma, User } from ".";
+import { prisma, User } from "database";
 
 export async function addBalanceToUser(
   userId: string,
