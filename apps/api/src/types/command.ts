@@ -9,6 +9,7 @@ import Inventory from "../commands/inventorySlashCommand";
 import Cooldowns from "../commands/cooldownSlashCommand";
 import Burn from "../commands/burnSlashCommand";
 import Items from "../commands/itemsSlashCommand";
+import Tag from "../commands/tagSlashCommand";
 
 export interface Command {
   data: SlashCommandBuilder | SlashCommandSubcommandsOnlyBuilder;
@@ -24,4 +25,5 @@ export const commands: Command[] = [
   Cooldowns,
   Items,
   Burn,
+  Tag,
 ];

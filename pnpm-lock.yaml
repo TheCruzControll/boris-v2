@@ -27,6 +27,7 @@ importers:
       '@types/luxon': ^3.2.0
       '@types/morgan': ^1.9.2
       '@types/node': ^15.12.2
+      '@types/node-emoji': ^1.8.2
       '@types/supertest': ^2.0.12
       '@types/uuid': ^9.0.1
       body-parser: ^1.19.0
@@ -43,6 +44,7 @@ importers:
       lodash: ^4.17.21
       luxon: ^3.3.0
       morgan: ^1.10.0
+      node-emoji: ^1.11.0
       pagination.djs: ^4.0.9
       supertest: ^6.2.4
       tsconfig: workspace:*
@@ -61,6 +63,7 @@ importers:
       lodash: 4.17.21
       luxon: 3.3.0
       morgan: 1.10.0
+      node-emoji: 1.11.0
       pagination.djs: 4.0.9_discord.js@14.7.1
       uuid: 9.0.0
     devDependencies:
@@ -73,6 +76,7 @@ importers:
       '@types/luxon': 3.2.0
       '@types/morgan': 1.9.3
       '@types/node': 15.14.9
+      '@types/node-emoji': 1.8.2
       '@types/supertest': 2.0.12
       '@types/uuid': 9.0.1
       eslint: 7.32.0
@@ -1323,6 +1327,10 @@ packages:
     resolution: {integrity: sha512-BiLcfVqGBZCyNCnCH3F4o2GmDLrpy0HeBVnNlyZG4fo88ZiE9SoiBe3C+2ezuwbjlEyT+PDZ17//TAlRxAn75Q==}
     dependencies:
       '@types/node': 15.14.9
+    dev: true
+
+  /@types/node-emoji/1.8.2:
+    resolution: {integrity: sha512-PfF1qL/9veo8BSHLV84C9ORNr3lHSlnWJ6yU8OdNufoftajeWHTLVbGHvp2B7e7DPDS9gMs6cfeSsqo5rqSitg==}
     dev: true
 
   /@types/node/15.14.9:
@@ -5170,6 +5178,12 @@ packages:
 
   /nice-try/1.0.5:
     resolution: {integrity: sha512-1nh45deeb5olNY7eX82BkPO7SSxR5SSYJiPTrTdFUVYwAl8CKMA5N9PjTYkHiRjisVcxcQ1HXdLhx2qxxJzLNQ==}
+
+  /node-emoji/1.11.0:
+    resolution: {integrity: sha512-wo2DpQkQp7Sjm2A0cq+sN7EHKO6Sl0ctXeBdFZrL9T9+UywORbufTcTZxom8YqpLQt/FqNMUkOpkZrJVYSKD3A==}
+    dependencies:
+      lodash: 4.17.21
+    dev: false
 
   /node-fetch/2.6.7:
     resolution: {integrity: sha512-ZjMPFEfVx5j+y2yF35Kzx5sF7kDzxuDj6ziH4FFbOp87zKDZNx8yExJIb05OGF4Nlt9IHFIMBkRl41VdvcNdbQ==}

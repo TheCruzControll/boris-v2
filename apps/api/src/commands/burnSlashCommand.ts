@@ -9,8 +9,24 @@ export const Burn: Command = {
   data: new SlashCommandBuilder()
     .setName("burn")
     .setDescription("Burn cards")
-    .addStringOption((option) =>
-      option.setName("cardid").setDescription("Id of card")
+    .addSubcommand((subcommand) =>
+      subcommand
+        .setName("card")
+        .setDescription("burn single card")
+        .addStringOption((option) =>
+          option.setName("cardid").setDescription("Id of card")
+        )
+    )
+    .addSubcommand((subcommand) =>
+      subcommand
+        .setName("tag")
+        .setDescription("Burn all cards with tag")
+        .addStringOption((option) =>
+          option
+            .setName("tagname")
+            .setDescription("Name of tag to mass burn")
+            .setRequired(true)
+        )
     ),
   /*
    *  - Burn by tag
@@ -20,7 +36,15 @@ export const Burn: Command = {
     interaction: ChatInputCommandInteraction,
     client: DiscordClient
   ) => {
-    await startBurnCardWorkflow(interaction, client);
+    switch (interaction.options.getSubcommand()) {
+      case "card":
+        await startBurnCardWorkflow(interaction, client);
+        return;
+      case "tag":
+        // await startBurnTagWorkflow(interaction);
+        await interaction.followUp("not implemented");
+        return;
+    }
   },
 };
 

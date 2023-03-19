@@ -57,10 +57,10 @@ export async function getSingleCard(
   const images = await drawImages(skins);
   const file = new AttachmentBuilder(images).setName("card.png");
 
-  const { id, generation, rank, masteryPoints, masteryRank, user } = cardFromDb;
+  const { id, generation, rank, masteryPoints, masteryRank } = cardFromDb;
   const exampleEmbed = new EmbedBuilder()
     .setTitle("Card Details")
-    .setDescription(`Owned by <@${user.id}>`)
+    .setDescription(`Owned by <@${interaction.user.toString()}>`)
     .setImage("attachment://card.png")
     .addFields({
       name: "\u200B",

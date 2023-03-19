@@ -15,3 +15,4 @@ export const emojisToEmojiIds: Record<Rank, string> = {
 export const readyEmoji = "✅";
 export const waitingEmoji = "🚫";
 export const blueEssenceEmoji = "<:blue_essence:1085804840191528990>";
+export const emojiRegex = new RegExp("<:[A-Za-z]+:[A-Za-z0-9]+>");
