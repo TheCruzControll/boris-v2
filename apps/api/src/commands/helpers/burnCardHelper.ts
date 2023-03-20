@@ -15,16 +15,25 @@ import DiscordClient from "../../discordClient";
 import { drawImages } from "./cardDropHelpers";
 import { Duration } from "luxon";
 import { sendMessageToChannel } from "./sharedHelpers";
-import { blueEssenceEmoji, emojisToEmojiIds } from "../../types/emoji";
+import {
+  blueEssenceEmoji,
+  closeEmoji,
+  emojisToEmojiIds,
+  fireEmoji,
+} from "../../types/emoji";
 import { Card, Rank } from "database";
-import { deleteCard, getUserCard } from "../../services/cardService";
+import {
+  deleteCard,
+  deleteManyCards,
+  getUserCard,
+} from "../../services/cardService";
 import { addBalanceToUser } from "../../services/userService";
+import { getCardsForTag, getTag } from "../../services/tagService";
 
 export async function startBurnCardWorkflow(
   interaction: ChatInputCommandInteraction,
   client: DiscordClient
 ): Promise<void> {
-  const unparsedCardId = interaction.options.getString("cardid");
   /*
    *  - get card to delete (card service) default to newest if no cardId
    *  - show card to user with info about how much essence is generated
@@ -32,6 +41,7 @@ export async function startBurnCardWorkflow(
    *  - If confirm, delete and change embed color to green
    *  - If cancel, chance embed color to red
    */
+  const unparsedCardId = interaction.options.getString("cardid");
   const cardId = unparsedCardId
     ? parseInt(unparsedCardId as string)
     : undefined;
@@ -71,11 +81,11 @@ export async function startBurnCardWorkflow(
   const row = new ActionRowBuilder<ButtonBuilder>().addComponents([
     new ButtonBuilder()
       .setCustomId(burnButtonId)
-      .setLabel("Burn")
+      .setEmoji(fireEmoji)
       .setStyle(ButtonStyle.Success),
     new ButtonBuilder()
       .setCustomId(cancelButtonId)
-      .setLabel("Cancel")
+      .setEmoji(closeEmoji)
       .setStyle(ButtonStyle.Danger),
   ]);
   const { id, generation, rank, masteryPoints, masteryRank } = cardToDelete;
@@ -134,12 +144,12 @@ export async function startBurnCardWorkflow(
             row.setComponents([
               new ButtonBuilder()
                 .setCustomId(burnButtonId)
-                .setLabel("Burn")
+                .setEmoji(fireEmoji)
                 .setStyle(ButtonStyle.Success)
                 .setDisabled(true),
               new ButtonBuilder()
                 .setCustomId(cancelButtonId)
-                .setLabel("Cancel")
+                .setEmoji(closeEmoji)
                 .setStyle(ButtonStyle.Danger)
                 .setDisabled(true),
             ]),
@@ -159,12 +169,146 @@ export async function startBurnCardWorkflow(
             row.setComponents([
               new ButtonBuilder()
                 .setCustomId(burnButtonId)
-                .setLabel("Burn")
+                .setEmoji(fireEmoji)
                 .setStyle(ButtonStyle.Success)
                 .setDisabled(true),
               new ButtonBuilder()
                 .setCustomId(cancelButtonId)
-                .setLabel("Cancel")
+                .setEmoji(closeEmoji)
+                .setStyle(ButtonStyle.Danger)
+                .setDisabled(true),
+            ]),
+          ],
+        });
+      } else {
+        await sendMessageToChannel(
+          client,
+          interaction.channelId,
+          `Something went wrong. Please try again`
+        );
+      }
+
+      await buttonInteraction.deferUpdate();
+    }
+  );
+}
+
+export async function startBurnTagWorkflow(
+  interaction: ChatInputCommandInteraction,
+  client: DiscordClient
+): Promise<void> {
+  const tagname = interaction.options.getString("tagname")!;
+  const tag = await getTag(interaction.user.id, tagname);
+  if (!tag) {
+    await interaction.followUp(
+      `${interaction.user.toString()}, that tag does not exist`
+    );
+  }
+
+  const cardsToDelete = await getCardsForTag(interaction.user.id, tagname);
+  const cardsToShow: string[] = [];
+  const dot = "•";
+
+  for (const card of cardsToDelete) {
+    const rowString =
+      `${tag!.emoji} ` +
+      `**${card.skin.name}** ${dot} ` +
+      `${emojisToEmojiIds[card.rank]}${card.rank} ${dot} ` +
+      `\`ID:${card.id}\` ${dot} ` +
+      `\`Gen: ${card.generation}\``;
+    cardsToShow.push(rowString);
+  }
+
+  const burnButtonId = uuid.v4();
+  const cancelButtonId = uuid.v4();
+  const blueEssence = cardsToDelete.reduce((acc, card) => {
+    acc += calculateBlueEssence(card);
+    return acc;
+  }, 0);
+
+  const row = new ActionRowBuilder<ButtonBuilder>().addComponents([
+    new ButtonBuilder()
+      .setCustomId(burnButtonId)
+      .setEmoji(fireEmoji)
+      .setStyle(ButtonStyle.Success),
+    new ButtonBuilder()
+      .setCustomId(cancelButtonId)
+      .setEmoji(closeEmoji)
+      .setStyle(ButtonStyle.Danger),
+  ]);
+  const exampleEmbed = new EmbedBuilder()
+    .setTitle(`Mass Burn`)
+    .addFields(
+      {
+        name: "Burn Rewards",
+        value: `${blueEssenceEmoji} ${dot} ${blueEssence}\n`,
+      },
+      {
+        name: `Cards Burned: ${cardsToDelete.length}`,
+        value: cardsToShow.length === 0 ? "\u200B" : cardsToShow.join("\n"),
+      }
+    )
+    .setColor(LeagueColors.Gold4);
+
+  const message = await interaction.followUp({
+    components: [row],
+    embeds: [exampleEmbed],
+  });
+  const interactionTime = Duration.fromObject({ seconds: 30 });
+  const collector = message.createMessageComponentCollector({
+    time: interactionTime.toMillis(),
+  });
+
+  collector.on(
+    "collect",
+    async (buttonInteraction: MessageComponentInteraction) => {
+      if (buttonInteraction.user.id !== interaction.user.id) {
+        return;
+      }
+
+      const buttonCustomId = buttonInteraction.customId;
+      if (buttonCustomId === burnButtonId) {
+        await deleteManyCards(cardsToDelete);
+        await addBalanceToUser(interaction.user.id, blueEssence);
+        const editedEmbed = exampleEmbed.setColor(Colors.Green);
+        await interaction.editReply({
+          embeds: [editedEmbed],
+          content: `**BURN SUCCESSFUL**`,
+          components: [
+            row.setComponents([
+              new ButtonBuilder()
+                .setCustomId(burnButtonId)
+                .setEmoji(fireEmoji)
+                .setStyle(ButtonStyle.Success)
+                .setDisabled(true),
+              new ButtonBuilder()
+                .setCustomId(cancelButtonId)
+                .setEmoji(closeEmoji)
+                .setStyle(ButtonStyle.Danger)
+                .setDisabled(true),
+            ]),
+          ],
+        });
+        await sendMessageToChannel(
+          client,
+          interaction.channelId,
+          `${interaction.user.toString()} received **${blueEssenceEmoji}${blueEssence} blue essence!**`
+        );
+      } else if (buttonCustomId === cancelButtonId) {
+        const editedEmbed = exampleEmbed.setColor(Colors.Red);
+        await interaction.editReply({
+          embeds: [editedEmbed],
+          content: `**BURN CANCELED**`,
+          components: [
+            row.setComponents([
+              new ButtonBuilder()
+                .setCustomId(burnButtonId)
+                .setEmoji(fireEmoji)
+                .setStyle(ButtonStyle.Success)
+                .setDisabled(true),
+              new ButtonBuilder()
+                .setCustomId(cancelButtonId)
+                .setEmoji(closeEmoji)
                 .setStyle(ButtonStyle.Danger)
                 .setDisabled(true),
             ]),

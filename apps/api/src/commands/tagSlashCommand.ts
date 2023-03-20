@@ -39,8 +39,7 @@ const Tag: Command = {
         .addStringOption((option) =>
           option
             .setName("cardid")
-            .setDescription("Card ID to tag")
-            .setRequired(true)
+            .setDescription("Card ID to tag. Defaults to last received card")
         )
     )
     .addSubcommand((subcommand) =>
@@ -53,7 +52,7 @@ const Tag: Command = {
     ),
   /*
    *   - Tag create: need tagname and emoji
-   *   - Tag card: need tagname and cardid
+   *   - Tag card: need tagname. Cardid is optional, default to last card
    *   - Tag delete: need tagname
    *   - Tag list: Need tagname. List emoji, tagname, and number of cards
    *   - Tag generation: Generate tags for all cards that meet certain filters. I.e rank === something. Rank > or < something. Gen < or > something. Champion name etc.

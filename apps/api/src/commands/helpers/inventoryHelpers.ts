@@ -1,6 +1,8 @@
 import {
   ActionRowBuilder,
   AttachmentBuilder,
+  ButtonBuilder,
+  ButtonStyle,
   CommandInteraction,
   EmbedBuilder,
   Events,
@@ -104,74 +106,75 @@ function buildEmbedFieldString(
   });
 }
 
-const inventorySortingDropdownOptions: SelectMenuComponentOptionData[] = [
-  {
-    label: "ID (asc)",
-    description: "Sort by ID ascending",
-    value: "id:asc",
-  },
-  {
-    label: "ID (desc)",
-    description: "Sort by ID descending",
-    value: "id:desc",
-  },
-  {
-    label: "Gen (asc)",
-    description: "Sort by Gen ascending",
-    value: "generation:asc",
-  },
-  {
-    label: "Gen (desc)",
-    description: "Sort by Gen descending",
-    value: "generation:desc",
-  },
-  {
-    label: "Rank (asc)",
-    description: "Sort by Rank ascending",
-    value: "rank:asc",
-  },
-  {
-    label: "Rank (desc)",
-    description: "Sort by Rank descending",
-    value: "rank:desc",
-  },
-  {
-    label: "Mastery Points (asc)",
-    description: "Sort by Mastery Points ascending",
-    value: "masteryPoints:asc",
-  },
-  {
-    label: "Mastery Points (desc)",
-    description: "Sort by Mastery Points descending",
-    value: "masteryPoints:desc",
-  },
-  {
-    label: "Mastery Rank (asc)",
-    description: "Sort by Mastery Rank ascending",
-    value: "masteryRank:asc",
-  },
-  {
-    label: "Mastery Rank (desc)",
-    description: "Sort by Mastery Rank descending",
-    value: "masteryRank:desc",
-  },
-  {
-    label: "Champion Name (asc)",
-    description: "Sort by Champion Name ascending",
-    value: "championName:asc",
-  },
-  {
-    label: "Champion Name (desc)",
-    description: "Sort by Champion Name descending",
-    value: "championName:desc",
-  },
-  /*
+export const inventorySortingDropdownOptions: SelectMenuComponentOptionData[] =
+  [
+    {
+      label: "ID (asc)",
+      description: "Sort by ID ascending",
+      value: "id:asc",
+    },
+    {
+      label: "ID (desc)",
+      description: "Sort by ID descending",
+      value: "id:desc",
+    },
+    {
+      label: "Gen (asc)",
+      description: "Sort by Gen ascending",
+      value: "generation:asc",
+    },
+    {
+      label: "Gen (desc)",
+      description: "Sort by Gen descending",
+      value: "generation:desc",
+    },
+    {
+      label: "Rank (asc)",
+      description: "Sort by Rank ascending",
+      value: "rank:asc",
+    },
+    {
+      label: "Rank (desc)",
+      description: "Sort by Rank descending",
+      value: "rank:desc",
+    },
+    {
+      label: "Mastery Points (asc)",
+      description: "Sort by Mastery Points ascending",
+      value: "masteryPoints:asc",
+    },
+    {
+      label: "Mastery Points (desc)",
+      description: "Sort by Mastery Points descending",
+      value: "masteryPoints:desc",
+    },
+    {
+      label: "Mastery Rank (asc)",
+      description: "Sort by Mastery Rank ascending",
+      value: "masteryRank:asc",
+    },
+    {
+      label: "Mastery Rank (desc)",
+      description: "Sort by Mastery Rank descending",
+      value: "masteryRank:desc",
+    },
+    {
+      label: "Champion Name (asc)",
+      description: "Sort by Champion Name ascending",
+      value: "championName:asc",
+    },
+    {
+      label: "Champion Name (desc)",
+      description: "Sort by Champion Name descending",
+      value: "championName:desc",
+    },
+    /*
    NOTE: IF SORTING BASED OFF OF SKIN FIELDS. YOU HAVE TO EDIT THE GET SORTED CARDS QUERY
    TODO: Sorting based off of skin line
    */
-];
+  ];
 
-async function setEmbedsFromCards(
+export async function setEmbedsFromCards(
   cards: Array<Card & { skin: Skin }>,
   pagination: Pagination,
   user: User,
@@ -236,6 +239,24 @@ export async function getAllCards(
         .addOptions(inventorySortingDropdownOptions)
     );
   pagination.addActionRows([dropdownActionRow]);
+  pagination.setButtons({
+    first: new ButtonBuilder()
+      .setCustomId("id0")
+      .setStyle(ButtonStyle.Primary)
+      .setEmoji({ id: "1087260480936087552" }),
+    prev: new ButtonBuilder()
+      .setCustomId("id1")
+      .setStyle(ButtonStyle.Primary)
+      .setEmoji({ id: "1087261059255119902" }),
+    next: new ButtonBuilder()
+      .setCustomId("id2")
+      .setStyle(ButtonStyle.Primary)
+      .setEmoji({ id: "1087261061285150780" }),
+    last: new ButtonBuilder()
+      .setCustomId("id3")
+      .setStyle(ButtonStyle.Primary)
+      .setEmoji({ id: "1087260479845564536" }),
+  });
 
   const payloads = pagination.ready();
   const message = await interaction.followUp(payloads);

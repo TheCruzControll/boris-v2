@@ -18,7 +18,10 @@ const Inventory: Command = {
         .setName("card")
         .setDescription("View single card")
         .addStringOption((option) =>
-          option.setName("cardid").setDescription("Id of card")
+          option
+            .setName("cardid")
+            .setDescription("Id of card")
+            .setRequired(true)
         )
     )
     .addSubcommand((subcommand) =>

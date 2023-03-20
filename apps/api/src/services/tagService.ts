@@ -1,4 +1,4 @@
-import { Card, prisma, Tag, User } from "database";
+import { Card, prisma, Skin, Tag, User } from "database";
 
 export async function createTag(
   userId: string,
@@ -71,10 +71,14 @@ export async function connectTagToCard(
 export async function getCardsForTag(
   userId: string,
   name: string
-): Promise<Tag | null> {
-  return prisma.tag.findUnique({
+): Promise<Array<Card & { skin: Skin }>> {
+  const tags = await prisma.tag.findUnique({
     include: {
-      cards: true,
+      cards: {
+        include: {
+          skin: true,
+        },
+      },
     },
     where: {
       userId_name: {
@@ -83,6 +87,8 @@ export async function getCardsForTag(
       },
     },
   });
+
+  return tags ? tags.cards : [];
 }
 
 export async function deleteTag(userId: string, name: string): Promise<Tag> {

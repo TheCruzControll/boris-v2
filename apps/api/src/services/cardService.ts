@@ -25,3 +25,11 @@ export async function deleteCard(cardId: number): Promise<Card> {
   });
   return deletedCard;
 }
+
+export async function deleteManyCards(cards: Card[]): Promise<number> {
+  const ids = cards.map((card) => card.id);
+  const deletedCards = await prisma.card.deleteMany({
+    where: { id: { in: ids } },
+  });
+  return deletedCards.count;
+}

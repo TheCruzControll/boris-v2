@@ -59,9 +59,12 @@ export async function startTagCardWorkflow(
   interaction: ChatInputCommandInteraction
 ): Promise<void> {
   const tagname = interaction.options.getString("name")!;
-  const cardId = interaction.options.getString("cardid")!;
+  const unparsedCardId = interaction.options.getString("cardid");
+  const cardId = unparsedCardId
+    ? parseInt(unparsedCardId as string)
+    : undefined;
   const tag = await getTag(interaction.user.id, tagname);
-  const card = await getUserCard(interaction.user.id, parseInt(cardId));
+  const card = await getUserCard(interaction.user.id, cardId);
   if (!tag) {
     await interaction.followUp(
       `${interaction.user.toString()}, that tag does not exist`
@@ -125,7 +128,8 @@ export async function startListTagWorkflow(
     .setImage("attachment://card.png")
     .addFields({
       name: "\u200B",
-      value: `${fieldStringArr.join("")}`,
+      value:
+        fieldStringArr.length === 0 ? "\u200B" : `${fieldStringArr.join("")}`,
     })
     .setColor(Colors.Gold4);
 
