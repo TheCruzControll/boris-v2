@@ -1,10 +1,8 @@
 import {
   ChatInputCommandInteraction,
-  CommandInteraction,
   SlashCommandBuilder,
   TextChannel,
 } from "discord.js";
-import { intersection } from "lodash";
 import DiscordClient from "../discordClient";
 import { Command } from "../types/command";
 import { getAllCards, getSingleCard } from "./helpers/inventoryHelpers";

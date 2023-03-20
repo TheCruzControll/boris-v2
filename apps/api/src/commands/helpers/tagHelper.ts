@@ -5,6 +5,7 @@ import {
   connectTagToCard,
   createTag,
   deleteTag,
+  disconnectTagFromCard,
   getAllTags,
   getTag,
 } from "../../services/tagService";
@@ -136,4 +137,39 @@ export async function startListTagWorkflow(
   await interaction.followUp({
     embeds: [exampleEmbed],
   });
+}
+
+export async function startUntagWorkflow(
+  interaction: ChatInputCommandInteraction
+) {
+  const tagname = interaction.options.getString("name")!;
+  const unparsedCardId = interaction.options.getString("cardid")!;
+
+  const cardId = unparsedCardId
+    ? parseInt(unparsedCardId as string)
+    : undefined;
+  const tag = await getTag(interaction.user.id, tagname);
+  const card = await getUserCard(interaction.user.id, cardId);
+
+  if (!tag) {
+    await interaction.followUp(
+      `${interaction.user.toString()}, that tag does not exist`
+    );
+    return;
+  }
+  if (!card) {
+    await interaction.followUp(
+      `${interaction.user.toString()}, you are not the owner of that card`
+    );
+    return;
+  }
+
+  await disconnectTagFromCard(interaction.user.id, tagname, card.id);
+  await interaction.followUp(
+    `${interaction.user.toString()}, **${
+      card.skin.name
+    }** has been untagged successfully`
+  );
+
+  return;
 }

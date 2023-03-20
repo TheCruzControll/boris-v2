@@ -1,4 +1,4 @@
-import { Card, prisma, Skin, Tag, User } from "database";
+import { Card, prisma, Skin, Tag } from "database";
 
 export async function createTag(
   userId: string,
@@ -66,6 +66,24 @@ export async function connectTagToCard(
     },
   });
   return connectedTag;
+}
+
+export async function disconnectTagFromCard(
+  userId: string,
+  name: string,
+  cardId: number
+): Promise<Tag> {
+  const disconnectedTag = await prisma.tag.update({
+    where: { userId_name: { userId, name } },
+    data: {
+      cards: {
+        disconnect: {
+          id: cardId,
+        },
+      },
+    },
+  });
+  return disconnectedTag;
 }
 
 export async function getCardsForTag(

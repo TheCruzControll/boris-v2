@@ -6,6 +6,7 @@ import {
   startDeleteTagWorkflow,
   startListTagWorkflow,
   startTagCardWorkflow,
+  startUntagWorkflow,
 } from "./helpers/tagHelper";
 
 const Tag: Command = {
@@ -49,6 +50,19 @@ const Tag: Command = {
         .addStringOption((option) =>
           option.setName("name").setDescription("Name of tag").setRequired(true)
         )
+    )
+    .addSubcommand((subcommand) =>
+      subcommand
+        .setName("untag")
+        .setDescription("Remove all tags from a card")
+        .addStringOption((option) =>
+          option.setName("name").setDescription("Name of tag").setRequired(true)
+        )
+        .addStringOption((option) =>
+          option
+            .setName("cardid")
+            .setDescription("Card ID to tag. Defaults to last received card")
+        )
     ),
   /*
    *   - Tag create: need tagname and emoji
@@ -74,7 +88,8 @@ const Tag: Command = {
       case "list":
         await startListTagWorkflow(interaction);
         return;
-      case "generate":
+      case "untag":
+        await startUntagWorkflow(interaction);
         return;
     }
   },
