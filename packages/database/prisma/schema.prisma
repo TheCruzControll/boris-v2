@@ -12,9 +12,17 @@ datasource db {
 
 model User {
   id      String @id
-  balance Int    @default(0)
+  balance BigInt @default(0)
   cards   Card[]
   tags    Tag[]
+  items   Item[]
+}
+
+model Item {
+  id      Int @id @default(autoincrement())
+  type    ItemType
+  user    User @relation(fields:[userId], references:[id])
+  userId  String 
 }
 
 model Card {
@@ -50,6 +58,11 @@ model Skin {
   // TODO:
   // skinLine      String
   // tier          SkinTier
+}
+
+enum ItemType {
+  Drop
+  Claim
 }
 
 enum SkinTier {

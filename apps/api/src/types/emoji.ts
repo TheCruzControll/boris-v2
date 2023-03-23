@@ -1,4 +1,4 @@
-import { Rank } from "database";
+import { ItemType, Rank } from "database";
 
 export const emojisToEmojiIds: Record<Rank, string> = {
   [Rank.Iron]: "<:iron:1081478893032181831>",
@@ -17,4 +17,12 @@ export const waitingEmoji = "🚫";
 export const fireEmoji = "🔥";
 export const blueEssenceEmoji = "<:blue_essence:1085804840191528990>";
 export const closeEmoji = "<:close:1087484394337468577>";
+export const checkEmoji = "<:check:1088586228783382618>";
 export const emojiRegex = new RegExp("<:[A-Za-z]+:[A-Za-z0-9]+>");
+export const dropEmoji = "💧";
+export const claimEmoji = "🤏";
+
+export const itemTypeToEmoji: { [item in ItemType]: string } = {
+  [ItemType.Drop]: dropEmoji,
+  [ItemType.Claim]: claimEmoji,
+};

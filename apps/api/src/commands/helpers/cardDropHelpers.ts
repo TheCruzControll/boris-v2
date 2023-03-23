@@ -2,8 +2,9 @@ import { getChance } from "../../singletons/chance";
 import { DateTime } from "luxon";
 import { removeNil } from "../../utils";
 import { createCanvas, loadImage, registerFont } from "canvas";
-import { Rank, Skin, redis } from "database";
+import { Rank, Skin, redis, ItemType } from "database";
 import { UserAction, UserActions } from "../../types/users";
+import { deleteItem, getItemByItemType } from "../../services/itemService";
 
 export interface CardImage {
   skinId: number;
@@ -190,6 +191,10 @@ export async function canUserMakeAction(
   userId: string,
   action: UserAction
 ): Promise<boolean> {
+  const item = await getItemByItemType(userId, action);
+  if (item) {
+    return true;
+  }
   const exists: number = await redis.exists(`${userId}-${action}`);
   const cdDuration = await getCooldownDuration(userId, action);
   // 0 means does not exist
@@ -217,10 +222,13 @@ export async function getCooldownDuration(
 export async function trackUserAction(
   userId: string,
   action: UserAction
-): Promise<void> {
-  if (!(await canUserMakeAction(userId, action))) {
-    console.log(`cannot add new action for ${userId}, returning early`);
-    return;
+): Promise<ItemType | null> {
+  const item = await getItemByItemType(userId, action);
+  const exists: number = await redis.exists(`${userId}-${action}`);
+  // only delete item if there is an existing cooldown
+  if (item && exists !== 0) {
+    await deleteItem(item.id);
+    return item.type;
   }
   const cdInMinutes = (() => {
     if (DateTime.now().weekdayLong === "Saturday") {
@@ -235,4 +243,5 @@ export async function trackUserAction(
   const time = DateTime.now().plus({ minutes: cdInMinutes });
   await redis.set(`${userId}-${action}`, time.toISO());
   await redis.expire(`${userId}-${action}`, cdInMinutes * 60);
+  return null;
 }

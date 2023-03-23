@@ -1,4 +1,4 @@
-import { prisma, Skin } from "database";
+import { ItemType, prisma, Skin } from "database";
 import {
   ActionRowBuilder,
   AttachmentBuilder,
@@ -14,7 +14,7 @@ import { v4 } from "uuid";
 import DiscordClient from "../discordClient";
 import { getChance } from "../singletons/chance";
 import { Command } from "../types/command";
-import { emojisToEmojiIds } from "../types/emoji";
+import { emojisToEmojiIds, itemTypeToEmoji } from "../types/emoji";
 import { UserActions } from "../types/users";
 import {
   canUserMakeAction,
@@ -93,7 +93,19 @@ async function handleComponentInteraction(
         emojisToEmojiIds[chosenSkin.rank]
       }${chosenSkin.rank}` + ` | \`${card.id}\`!**`
     );
-    await trackUserAction(buttonInteraction.user.id, UserActions.Claim);
+    const itemUsed = await trackUserAction(
+      buttonInteraction.user.id,
+      UserActions.Claim
+    );
+    if (itemUsed) {
+      await sendMessageToChannel(
+        client,
+        interaction.channelId,
+        `${buttonInteraction.user.toString()} used item ${
+          itemTypeToEmoji[itemUsed as ItemType]
+        }${itemUsed}!**`
+      );
+    }
   } else {
     // if already claimed
     if (!uniqueButtonIds[chosenSkin.mappedCustomButtonId]) {
@@ -150,7 +162,19 @@ const DropCards: Command = {
       return;
     }
     // Tracking earlier now to prevent people from spamming the drop command
-    await trackUserAction(interaction.user.id, UserActions.Drop);
+    const itemUsed = await trackUserAction(
+      interaction.user.id,
+      UserActions.Drop
+    );
+    if (itemUsed) {
+      await sendMessageToChannel(
+        client,
+        interaction.channelId,
+        `${interaction.user.toString()} used item ${
+          itemTypeToEmoji[itemUsed as ItemType]
+        }${itemUsed}!**`
+      );
+    }
 
     const buttonIds = new Array(3).fill("").map(() => {
       return v4();
@@ -250,7 +274,17 @@ const DropCards: Command = {
         if (winnerUserid === "") {
           continue;
         }
-        await trackUserAction(winnerUserid, UserActions.Claim);
+        const itemUsed = await trackUserAction(winnerUserid, UserActions.Claim);
+        if (itemUsed) {
+          await sendMessageToChannel(
+            client,
+            interaction.channelId,
+            `<@${winnerUserid}> used item ${
+              itemTypeToEmoji[itemUsed as ItemType]
+            }${itemUsed}!**`
+          );
+        }
+
         const chosenSkin = cardImages.find((cardImage) => {
           return cardImage.mappedCustomButtonId === id;
         })!;

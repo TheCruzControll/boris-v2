@@ -1,34 +1,59 @@
-import {
-  CommandInteraction,
-  EmbedBuilder,
-  SlashCommandBuilder,
-} from "discord.js";
+import { ItemType } from "database";
+import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
 import DiscordClient from "../discordClient";
-import { createUser, getUser } from "../services/userService";
-import { Colors } from "../types/colors";
 import { Command } from "../types/command";
-import { blueEssenceEmoji } from "../types/emoji";
+import {
+  startBuyItemWorkflow,
+  startShopItemsWorkflow,
+  startViewItemsWorkflow,
+} from "./helpers/itemHelper";
 
 const Items: Command = {
   data: new SlashCommandBuilder()
     .setName("items")
-    .setDescription("Display all item quantities"),
-  run: async (interaction: CommandInteraction, _client: DiscordClient) => {
-    let user = await getUser(interaction.user.id);
-    if (!user) {
-      user = await createUser(interaction.user.id);
+    .setDescription("Commands for items")
+    .addSubcommand((subcommand) =>
+      subcommand.setName("view").setDescription("View all of your items")
+    )
+    .addSubcommand((subcommand) =>
+      subcommand.setName("shop").setDescription("View the item shop")
+    )
+    .addSubcommand((subcommand) =>
+      subcommand
+        .setName("buy")
+        .setDescription("Buy items from item shop")
+        .addStringOption((option) =>
+          option
+            .setName("name")
+            .setDescription("Name of item")
+            .setRequired(true)
+            .addChoices(
+              { name: ItemType.Drop, value: ItemType.Drop },
+              { name: ItemType.Claim, value: ItemType.Claim }
+            )
+        )
+        .addNumberOption((option) =>
+          option
+            .setName("quantity")
+            .setDescription("Quantity of item. Default to 1")
+        )
+    ),
+  run: async (
+    interaction: ChatInputCommandInteraction,
+    client: DiscordClient
+  ) => {
+    const subcommand = interaction.options.getSubcommand();
+    switch (subcommand) {
+      case "view":
+        await startViewItemsWorkflow(interaction);
+        return;
+      case "shop":
+        await startShopItemsWorkflow(interaction);
+        return;
+      case "buy":
+        await startBuyItemWorkflow(interaction, client);
+        return;
     }
-    const embed = new EmbedBuilder()
-      .setAuthor({
-        name: `${interaction.user.username}'s Items`,
-        iconURL: interaction.user.avatarURL()!,
-      })
-      .addFields({
-        name: "\u200B",
-        value: `${blueEssenceEmoji}**${user.balance.toString()}** blue essence`,
-      })
-      .setColor(Colors.Gold4);
-    await interaction.followUp({ embeds: [embed] });
   },
 };
 

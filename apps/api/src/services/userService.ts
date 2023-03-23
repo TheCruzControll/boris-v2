@@ -14,8 +14,26 @@ export async function addBalanceToUser(
   });
 }
 
-export async function getUser(userId: string): Promise<User | null> {
-  return prisma.user.findFirst({ where: { id: userId } });
+export async function subtractBalanceFromUser(
+  userId: string,
+  balanceToSubtract: number
+): Promise<User> {
+  return prisma.user.update({
+    where: { id: userId },
+    data: {
+      balance: {
+        decrement: balanceToSubtract,
+      },
+    },
+  });
+}
+
+export async function getOrCreateUser(userId: string): Promise<User> {
+  return prisma.user.upsert({
+    where: { id: userId },
+    create: { id: userId, balance: 0 },
+    update: {},
+  });
 }
 
 export async function createUser(discordUserId: string): Promise<User> {
