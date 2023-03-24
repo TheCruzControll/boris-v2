@@ -147,6 +147,25 @@ export async function startBuyItemWorkflow(
       }
 
       const buttonCustomId = buttonInteraction.customId;
+      await interaction.editReply({
+        embeds: [embed],
+        components: [
+          row.setComponents([
+            new ButtonBuilder()
+              .setCustomId("Confirm")
+              .setEmoji(checkEmoji)
+              .setStyle(ButtonStyle.Success)
+              .setDisabled(true),
+            new ButtonBuilder()
+              .setCustomId("Cancel")
+              .setEmoji(closeEmoji)
+              .setStyle(ButtonStyle.Danger)
+              .setDisabled(true),
+          ]),
+        ],
+      });
+      await buttonInteraction.deferUpdate();
+
       if (buttonCustomId === confirmButtonId) {
         const user = await getOrCreateUser(interaction.user.id);
         if (user.balance < price) {
@@ -172,18 +191,19 @@ export async function startBuyItemWorkflow(
               ]),
             ],
           });
-          await buttonInteraction.deferUpdate();
           return;
         }
-        await Promise.all([
-          subtractBalanceFromUser(interaction.user.id, price),
-          addItemToUser(interaction.user.id, itemName as ItemType),
-        ]);
+
+        for (let i = 0; i < quantity; i++) {
+          await addItemToUser(interaction.user.id, itemName as ItemType);
+        }
+
+        await subtractBalanceFromUser(interaction.user.id, price);
 
         const editedEmbed = embed.setColor(DiscordColors.Green);
         await interaction.editReply({
           embeds: [editedEmbed],
-          content: `**BURN SUCCESSFUL**`,
+          content: `**PURCHASE SUCCESSFUL**`,
           components: [
             row.setComponents([
               new ButtonBuilder()
@@ -233,8 +253,6 @@ export async function startBuyItemWorkflow(
           `Something went wrong. Please try again`
         );
       }
-
-      await buttonInteraction.deferUpdate();
     }
   );
 }
