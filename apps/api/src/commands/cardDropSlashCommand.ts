@@ -101,7 +101,7 @@ async function handleComponentInteraction(
       await sendMessageToChannel(
         client,
         interaction.channelId,
-        `${buttonInteraction.user.toString()} used item ${
+        `${buttonInteraction.user.toString()} used item **${
           itemTypeToEmoji[itemUsed as ItemType]
         }${itemUsed}!**`
       );
@@ -170,7 +170,7 @@ const DropCards: Command = {
       await sendMessageToChannel(
         client,
         interaction.channelId,
-        `${interaction.user.toString()} used item ${
+        `${interaction.user.toString()} used item **${
           itemTypeToEmoji[itemUsed as ItemType]
         }${itemUsed}!**`
       );
@@ -279,7 +279,7 @@ const DropCards: Command = {
           await sendMessageToChannel(
             client,
             interaction.channelId,
-            `<@${winnerUserid}> used item ${
+            `<@${winnerUserid}> used item **${
               itemTypeToEmoji[itemUsed as ItemType]
             }${itemUsed}!**`
           );
