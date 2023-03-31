@@ -1,6 +1,6 @@
 import { ItemType } from "database";
 import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
-import DiscordClient from "../discordClient";
+import { DiscordClient } from "../discordClient";
 import { Command } from "../types/command";
 import {
   startBuyItemWorkflow,

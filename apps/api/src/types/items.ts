@@ -20,8 +20,8 @@ const claimStringArr = [
 ];
 
 export const itemToPriceMap: { [item in ItemType]: number } = {
-  [ItemType.Claim]: 15000,
-  [ItemType.Drop]: 15000,
+  [ItemType.Claim]: 5000,
+  [ItemType.Drop]: 5000,
 };
 
 export const itemTypeToDescription: { [item in ItemType]: string } = {
