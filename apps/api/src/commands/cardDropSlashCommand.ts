@@ -11,7 +11,7 @@ import {
 } from "discord.js";
 import { Duration } from "luxon";
 import { v4 } from "uuid";
-import DiscordClient from "../discordClient";
+import { DiscordClient } from "../discordClient";
 import { getChance } from "../singletons/chance";
 import { Command } from "../types/command";
 import { emojisToEmojiIds, itemTypeToEmoji } from "../types/emoji";

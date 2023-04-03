@@ -1,6 +1,6 @@
-import { Events, GatewayIntentBits } from "discord.js";
+import { Events } from "discord.js";
 import { redis } from "database";
-import DiscordClient from "./discordClient";
+import { getDiscordClient } from "./discordClient";
 import registerListeners from "./registerListeners";
 import registerSlashCommands from "./registerSlashCommands";
 
@@ -13,9 +13,7 @@ registerSlashCommands()
   });
 
 // Create a new client instance
-const client = new DiscordClient({
-  intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages],
-});
+const client = getDiscordClient();
 
 client.once(Events.ClientReady, (c) => {
   console.log(`Ready! Logged in as ${c.user.tag}`);

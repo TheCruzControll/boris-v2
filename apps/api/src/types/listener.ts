@@ -1,5 +1,5 @@
 import { Interaction, Events } from "discord.js";
-import DiscordClient from "../discordClient";
+import { DiscordClient } from "../discordClient";
 
 export interface Listener {
   name: Events;

@@ -203,7 +203,7 @@ export async function canUserMakeAction(
 
 export async function getCooldownDuration(
   userId: string,
-  action: UserAction
+  action: UserAction | string
 ): Promise<{ minutes: number; seconds: number }> {
   const userExpireTime = await redis.get(`${userId}-${action}`);
   if (!userExpireTime) {

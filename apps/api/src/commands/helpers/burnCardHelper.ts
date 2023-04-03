@@ -11,7 +11,7 @@ import {
 } from "discord.js";
 import { Colors as LeagueColors } from "../../types/colors";
 import * as uuid from "uuid";
-import DiscordClient from "../../discordClient";
+import { DiscordClient } from "../../discordClient";
 import { drawImages } from "./cardDropHelpers";
 import { Duration } from "luxon";
 import { sendMessageToChannel } from "./sharedHelpers";

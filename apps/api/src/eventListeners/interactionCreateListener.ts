@@ -1,10 +1,20 @@
-import { CommandInteraction, Events, Interaction } from "discord.js";
-import DiscordClient from "../discordClient";
+import {
+  CommandInteraction,
+  Events,
+  Interaction,
+  ModalSubmitInteraction,
+} from "discord.js";
+import { handleSubmitModal } from "../commands/helpers/tradeHelpers";
+import { DiscordClient } from "../discordClient";
 import { Listener } from "../types/listener";
 
 const run = async (client: DiscordClient, interaction: Interaction) => {
   if (interaction.isCommand()) {
     await handleSlashCommand(client, interaction);
+  }
+
+  if (interaction.isModalSubmit()) {
+    await handleSubmitModal(interaction);
   }
 };
 

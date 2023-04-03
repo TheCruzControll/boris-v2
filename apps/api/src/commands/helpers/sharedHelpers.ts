@@ -1,5 +1,5 @@
 import { Snowflake, TextChannel } from "discord.js";
-import DiscordClient from "../../discordClient";
+import { DiscordClient } from "../../discordClient";
 
 export async function sendMessageToChannel(
   client: DiscordClient,

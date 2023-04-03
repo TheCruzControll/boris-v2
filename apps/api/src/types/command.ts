@@ -3,13 +3,14 @@ import {
   SlashCommandBuilder,
   SlashCommandSubcommandsOnlyBuilder,
 } from "discord.js";
-import DiscordClient from "../discordClient";
+import { DiscordClient } from "../discordClient";
 import DropCards from "../commands/cardDropSlashCommand";
 import Inventory from "../commands/inventorySlashCommand";
 import Cooldowns from "../commands/cooldownSlashCommand";
 import Burn from "../commands/burnSlashCommand";
 import Items from "../commands/itemsSlashCommand";
 import Tag from "../commands/tagSlashCommand";
+import Trade from "../commands/tradeSlashCommand";
 
 export interface Command {
   data: SlashCommandBuilder | SlashCommandSubcommandsOnlyBuilder;
@@ -26,4 +27,5 @@ export const commands: Command[] = [
   Items,
   Burn,
   Tag,
+  Trade,
 ];

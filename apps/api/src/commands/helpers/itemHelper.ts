@@ -10,7 +10,7 @@ import {
 } from "discord.js";
 import * as uuid from "uuid";
 import { Duration } from "luxon";
-import DiscordClient from "../../discordClient";
+import { DiscordClient } from "../../discordClient";
 import {
   createUser,
   getOrCreateUser,
@@ -255,7 +255,4 @@ export async function startBuyItemWorkflow(
       }
     }
   );
-}
-function getItems(id: string) {
-  throw new Error("Function not implemented.");
 }

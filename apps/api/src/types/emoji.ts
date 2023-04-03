@@ -21,6 +21,9 @@ export const checkEmoji = "<:check:1088586228783382618>";
 export const emojiRegex = new RegExp("<:[A-Za-z]+:[A-Za-z0-9]+>");
 export const dropEmoji = "💧";
 export const claimEmoji = "🤏";
+export const lockEmoji = "🔒";
+export const plusEmoji = "➕";
+export const cardEmoji = "🃏";
 
 export const itemTypeToEmoji: { [item in ItemType]: string } = {
   [ItemType.Drop]: dropEmoji,

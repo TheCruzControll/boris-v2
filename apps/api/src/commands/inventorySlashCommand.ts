@@ -3,7 +3,7 @@ import {
   SlashCommandBuilder,
   TextChannel,
 } from "discord.js";
-import DiscordClient from "../discordClient";
+import { DiscordClient } from "../discordClient";
 import { Command } from "../types/command";
 import { getAllCards, getSingleCard } from "./helpers/inventoryHelpers";
 

@@ -1,8 +1,6 @@
-import fs from "fs";
-import path from "path";
-import DiscordClient from "./discordClient";
 import readyListener from "./eventListeners/readyListener";
 import interactionCreateListener from "./eventListeners/interactionCreateListener";
+import { DiscordClient } from "./discordClient";
 
 const registerListeners = (client: DiscordClient) => {
   const events = [readyListener, interactionCreateListener];

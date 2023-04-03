@@ -4,11 +4,11 @@ import {
   EmbedBuilder,
   SlashCommandBuilder,
 } from "discord.js";
-import DiscordClient from "../discordClient";
 import { getCooldownDuration } from "./helpers/cardDropHelpers";
 import { UserAction, UserActions } from "../types/users";
 import { readyEmoji, waitingEmoji } from "../types/emoji";
 import { Colors } from "../types/colors";
+import { DiscordClient } from "../discordClient";
 
 function generateCooldownString(
   dropDuration: {

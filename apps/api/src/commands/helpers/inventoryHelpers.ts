@@ -11,7 +11,7 @@ import {
   TextChannel,
   User,
 } from "discord.js";
-import DiscordClient from "../../discordClient";
+import { DiscordClient } from "../../discordClient";
 import * as uuid from "uuid";
 import { drawImages } from "./cardDropHelpers";
 import { emojisToEmojiIds } from "../../types/emoji";

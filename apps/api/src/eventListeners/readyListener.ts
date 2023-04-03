@@ -1,7 +1,5 @@
 import { Events, Interaction } from "discord.js";
-import fs from "fs";
-import path from "path";
-import DiscordClient from "../discordClient";
+import { DiscordClient } from "../discordClient";
 import { Listener } from "../types/listener";
 import { commands } from "../types/command";
 

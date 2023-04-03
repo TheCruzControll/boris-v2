@@ -33,3 +33,14 @@ export async function deleteManyCards(cards: Card[]): Promise<number> {
   });
   return deletedCards.count;
 }
+
+export async function assignCardToUser(
+  cardIds: number[],
+  userId: string
+): Promise<number> {
+  const updatedCards = await prisma.card.updateMany({
+    where: { id: { in: cardIds } },
+    data: { userId },
+  });
+  return updatedCards.count;
+}
