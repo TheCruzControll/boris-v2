@@ -56,8 +56,15 @@ export async function getSingleCard(
       mappedCustomButtonId: uuid.v4(),
     },
   ];
-  const images = await drawImages(skins);
-  const file = new AttachmentBuilder(images).setName("card.png");
+
+  const image = await (async () => {
+    if (cardFromDb.url) {
+      return cardFromDb.url;
+    } else {
+      return drawImages(skins);
+    }
+  })();
+  const file = new AttachmentBuilder(image).setName("card.png");
 
   const { id, generation, rank, masteryPoints, masteryRank } = cardFromDb;
   const exampleEmbed = new EmbedBuilder()

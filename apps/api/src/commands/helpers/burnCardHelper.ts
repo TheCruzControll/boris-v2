@@ -71,8 +71,14 @@ export async function startBurnCardWorkflow(
       mappedCustomButtonId: uuid.v4(),
     },
   ];
-  const images = await drawImages(skins);
-  const file = new AttachmentBuilder(images).setName("card.png");
+  const image = await (async () => {
+    if (cardToDelete.url) {
+      return cardToDelete.url;
+    } else {
+      return drawImages(skins);
+    }
+  })();
+  const file = new AttachmentBuilder(image).setName("card.png");
 
   const burnButtonId = uuid.v4();
   const cancelButtonId = uuid.v4();

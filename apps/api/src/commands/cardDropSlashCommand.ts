@@ -1,4 +1,4 @@
-import { ItemType, prisma, Skin } from "database";
+import { ItemType, prisma, Skin, supabase } from "database";
 import {
   ActionRowBuilder,
   AttachmentBuilder,
@@ -64,10 +64,19 @@ async function handleComponentInteraction(
 
   if (buttonInteraction.user.id === interaction.user.id) {
     delete uniqueButtonIds[chosenSkin.mappedCustomButtonId];
+    const cardImage = await drawImages([chosenSkin]);
+
+    const cardUrl = v4();
+    await supabase.storage.from("cards").upload(`${cardUrl}.png`, cardImage, {
+      contentType: "image/png",
+      cacheControl: "3600",
+      upsert: true,
+    });
     const card = await prisma.card.create({
       data: {
         generation: chosenSkin.generation,
         rank: chosenSkin.rank,
+        url: `${process.env.SUPABASE_CARD_BUCKET_URL}/${cardUrl}.png`,
         user: {
           connectOrCreate: {
             where: {
@@ -212,12 +221,12 @@ const DropCards: Command = {
       prisma.skin.findFirst({ skip: skips[2] }),
     ]);
 
-    const cardImages = createCards(
+    const cardData = createCards(
       [buttonIds[0], buttonIds[1], buttonIds[2]],
       skinsFromDb
     );
 
-    const images = await drawImages(cardImages);
+    const images = await drawImages(cardData);
     const attachment = new AttachmentBuilder(images);
 
     const message = await interaction.editReply({
@@ -239,7 +248,7 @@ const DropCards: Command = {
           interaction,
           client,
           uniqueButtonIds,
-          cardImages
+          cardData
         );
         await buttonInteraction.deferUpdate();
       }
@@ -285,7 +294,7 @@ const DropCards: Command = {
           );
         }
 
-        const chosenSkin = cardImages.find((cardImage) => {
+        const chosenSkin = cardData.find((cardImage) => {
           return cardImage.mappedCustomButtonId === id;
         })!;
 

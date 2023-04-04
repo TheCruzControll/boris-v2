@@ -31,6 +31,7 @@ model Card {
   rank          Rank
   masteryPoints Int    @default(0)
   masteryRank   Int    @default(1)
+  url           String @default("")
   skin          Skin   @relation(fields: [skinId], references: [id])
   skinId        Int
   user          User   @relation(fields: [userId], references: [id])
