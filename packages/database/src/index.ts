@@ -1,9 +1,8 @@
 import { createClient } from "redis";
 import { PrismaClient } from "@prisma/client";
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
-require("dotenv-mono").load();
-
 export * from "@prisma/client";
+require("dotenv-mono").load();
 
 export const supabase = createSupabaseClient(
   process.env.SUPABASE_URL!,
