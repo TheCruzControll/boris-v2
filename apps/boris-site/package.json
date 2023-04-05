@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@tanstack/react-query": "^4.28.0",
+    "@trpc/server": "^10.18.0",
     "api": "workspace:*",
     "database": "workspace:*",
     "next": "^13.2.4",
