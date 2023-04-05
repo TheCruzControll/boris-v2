@@ -93,6 +93,8 @@ importers:
   apps/boris-site:
     specifiers:
       '@tanstack/react-query': ^4.28.0
+      '@trpc/client': ^10.18.0
+      '@trpc/next': ^10.18.0
       '@trpc/server': ^10.18.0
       '@types/eslint': ^8.21.3
       '@types/node': ^18.15.5
@@ -118,6 +120,8 @@ importers:
       zod: ^3.21.4
     dependencies:
       '@tanstack/react-query': 4.28.0_biqbaboplfbrettd7655fr4n2y
+      '@trpc/client': 10.18.0_@trpc+server@10.18.0
+      '@trpc/next': 10.18.0_fk7ybuwqrs7skzzxcj6wjc5c3i
       '@trpc/server': 10.18.0
       api: link:../../packages/api
       database: link:../../packages/database
