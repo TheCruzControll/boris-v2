@@ -298,10 +298,21 @@ const DropCards: Command = {
           return cardImage.mappedCustomButtonId === id;
         })!;
 
+        const cardImage = await drawImages([chosenSkin]);
+        const cardUrl = v4();
+        await supabase.storage
+          .from("cards")
+          .upload(`${cardUrl}.png`, cardImage, {
+            contentType: "image/png",
+            cacheControl: "3600",
+            upsert: true,
+          });
+
         const card = await prisma.card.create({
           data: {
             generation: chosenSkin.generation,
             rank: chosenSkin.rank,
+            url: `${process.env.SUPABASE_CARD_BUCKET_URL}/${cardUrl}.png`,
             user: {
               connectOrCreate: {
                 where: {
