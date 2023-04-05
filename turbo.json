@@ -9,7 +9,7 @@
         "dist/**",
         ".next/**",
         "build/**",
-        "api/**",
+        "boris/**",
         "public/build/**"
       ],
       "dependsOn": [
