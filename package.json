@@ -3,10 +3,13 @@
   "scripts": {
     "build": "turbo run build",
     "build:boris": "turbo run build --filter=boris",
+    "build:boris-site": "turbo run build --filter=boris",
     "clean": "turbo run clean",
     "dev": "turbo run dev --no-cache  --continue",
     "dev:boris": "turbo run dev --no-cache  --continue --filter=boris",
+    "dev:boris-site": "turbo run dev --no-cache  --continue --filter=boris-site",
     "start:boris": "turbo run start --filter=boris",
+    "start:boris-site": "turbo run start --filter=boris-site",
     "db:generate": "turbo run db:generate",
     "db:push": "turbo run db:push",
     "seed-db": "turbo run seed-db",
