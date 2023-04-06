@@ -63,6 +63,7 @@ async function handleComponentInteraction(
   }
 
   if (buttonInteraction.user.id === interaction.user.id) {
+    await buttonInteraction.deferUpdate();
     delete uniqueButtonIds[chosenSkin.mappedCustomButtonId];
     const cardImage = await drawImages([chosenSkin]);
 
@@ -146,6 +147,7 @@ async function handleComponentInteraction(
         chosenSkin.name
       } | ${emojisToEmojiIds[chosenSkin.rank]}${chosenSkin.rank}**`
     );
+    await buttonInteraction.deferUpdate();
   }
 }
 
@@ -250,7 +252,6 @@ const DropCards: Command = {
           uniqueButtonIds,
           cardData
         );
-        await buttonInteraction.deferUpdate();
       }
     );
 
