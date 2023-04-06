@@ -1,5 +1,5 @@
 import React from "react";
-import { HeadingProps } from "react-html-props";
+import { HeadingProps, PProps } from "react-html-props";
 import cn from "classnames";
 
 type HeadingVariant = "h1" | "h2" | "h3" | "h4" | "h5";
