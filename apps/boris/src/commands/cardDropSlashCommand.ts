@@ -45,7 +45,7 @@ async function handleComponentInteraction(
     }m and ${Math.floor(
       cdDuration.seconds
     )}s before you can claim another card**`;
-    await sendMessageToChannel(client, interaction.channelId, message);
+    sendMessageToChannel(client, interaction.channelId, message);
     return;
   }
 
@@ -54,7 +54,7 @@ async function handleComponentInteraction(
   });
 
   if (!chosenSkin) {
-    await sendMessageToChannel(
+    sendMessageToChannel(
       client,
       interaction.channelId,
       `${buttonInteraction.user.toString()} woops, an error happened. Please try again`
@@ -64,15 +64,12 @@ async function handleComponentInteraction(
 
   if (buttonInteraction.user.id === interaction.user.id) {
     delete uniqueButtonIds[chosenSkin.mappedCustomButtonId];
-    const itemUsed = await trackUserAction(
-      buttonInteraction.user.id,
-      UserActions.Claim
-    );
-    await buttonInteraction.deferUpdate();
     const cardImage = await drawImages([chosenSkin]);
 
     const cardUrl = v4();
-    await supabase.storage.from("cards").upload(`${cardUrl}.png`, cardImage, {
+    // this usually takes really long so were not awaiting.
+    // This doesnt need to finish in order to go thorugh the rest so its fine to not await
+    supabase.storage.from("cards").upload(`${cardUrl}.png`, cardImage, {
       contentType: "image/png",
       cacheControl: "3600",
       upsert: true,
@@ -100,14 +97,17 @@ async function handleComponentInteraction(
         },
       },
     });
-    await sendMessageToChannel(
+    sendMessageToChannel(
       client,
       interaction.channelId,
       `${buttonInteraction.user.toString()} claimed **${chosenSkin.name} | ${
         emojisToEmojiIds[chosenSkin.rank]
       }${chosenSkin.rank}` + ` | \`${card.id}\`!**`
     );
-
+    const itemUsed = await trackUserAction(
+      buttonInteraction.user.id,
+      UserActions.Claim
+    );
     if (itemUsed) {
       await sendMessageToChannel(
         client,
@@ -123,7 +123,7 @@ async function handleComponentInteraction(
       const message = `${buttonInteraction.user.toString()} sorry, ${
         chosenSkin.name
       } is already claimed`;
-      await sendMessageToChannel(client, interaction.channelId, message);
+      sendMessageToChannel(client, interaction.channelId, message);
       return;
     }
 
@@ -133,7 +133,7 @@ async function handleComponentInteraction(
         buttonInteraction.user.id
       )
     ) {
-      await sendMessageToChannel(
+      sendMessageToChannel(
         client,
         interaction.channelId,
         `${buttonInteraction.user.toString()} you can only have one raffle entry`
@@ -141,14 +141,13 @@ async function handleComponentInteraction(
       return;
     }
     uniqueButtonIds[buttonInteraction.customId].add(buttonInteraction.user.id);
-    await sendMessageToChannel(
+    sendMessageToChannel(
       client,
       interaction.channelId,
       `${buttonInteraction.user.toString()} has joined the raffle for **${
         chosenSkin.name
       } | ${emojisToEmojiIds[chosenSkin.rank]}${chosenSkin.rank}**`
     );
-    await buttonInteraction.deferUpdate();
   }
 }
 
@@ -163,8 +162,8 @@ const DropCards: Command = {
         interaction.user.id,
         UserActions.Drop
       );
-      await interaction.deleteReply();
-      await sendMessageToChannel(
+      interaction.deleteReply();
+      sendMessageToChannel(
         client,
         interaction.channelId,
         `${interaction.user.toString()} **You must wait ${
@@ -253,6 +252,7 @@ const DropCards: Command = {
           uniqueButtonIds,
           cardData
         );
+        await buttonInteraction.deferUpdate();
       }
     );
 
@@ -302,13 +302,11 @@ const DropCards: Command = {
 
         const cardImage = await drawImages([chosenSkin]);
         const cardUrl = v4();
-        await supabase.storage
-          .from("cards")
-          .upload(`${cardUrl}.png`, cardImage, {
-            contentType: "image/png",
-            cacheControl: "3600",
-            upsert: true,
-          });
+        supabase.storage.from("cards").upload(`${cardUrl}.png`, cardImage, {
+          contentType: "image/png",
+          cacheControl: "3600",
+          upsert: true,
+        });
 
         const card = await prisma.card.create({
           data: {
@@ -333,7 +331,7 @@ const DropCards: Command = {
             },
           },
         });
-        await sendMessageToChannel(
+        sendMessageToChannel(
           client,
           interaction.channelId,
           `<@${winnerUserid}> claimed **${chosenSkin.name} | ${
