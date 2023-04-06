@@ -1,3 +1,28 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@font-face {
+  font-family: "Beaufort-MediumItalic";
+  src: url("../../public/BeaufortforLOL-MediumItalic.otf");
+}
+@font-face {
+  font-family: "Beaufort-Bold";
+  src: url("../../public/BeaufortforLOL-Bold.otf");
+}
+@font-face {
+  font-family: "Beaufort-BoldItalic";
+  src: url("../../public/BeaufortforLOL-BoldItalic.otf");
+}
+@font-face {
+  font-family: "Spiegel-Bold";
+  src: url("../../public/Spiegel-Bold.otf");
+}
+@font-face {
+  font-family: "Spiegel";
+  src: url("../../public/Spiegel-Regular.otf");
+}
+
+body {
+  background-color: theme("colors.black");
+}

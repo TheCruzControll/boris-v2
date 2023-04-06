@@ -104,6 +104,8 @@ importers:
       '@typescript-eslint/eslint-plugin': ^5.56.0
       '@typescript-eslint/parser': ^5.56.0
       autoprefixer: ^10.4.14
+      classnames: ^2.3.2
+      database: workspace:*
       eslint: ^8.36.0
       eslint-config-next: ^13.2.4
       next: ^13.2.4
@@ -112,6 +114,7 @@ importers:
       prettier-plugin-tailwindcss: ^0.2.6
       react: 18.2.0
       react-dom: 18.2.0
+      react-html-props: ^2.0.2
       superjson: 1.12.2
       tailwindcss: ^3.3.0
       typescript: ^5.0.2
@@ -123,6 +126,8 @@ importers:
       '@trpc/next': 10.18.0_fk7ybuwqrs7skzzxcj6wjc5c3i
       '@trpc/react-query': 10.18.0_rcvfzig2xktluz4p7kugxqlbwi
       '@trpc/server': 10.18.0
+      classnames: 2.3.2
+      database: link:../../packages/database
       next: 13.2.4_biqbaboplfbrettd7655fr4n2y
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
@@ -142,6 +147,7 @@ importers:
       postcss: 8.4.21
       prettier: 2.8.7
       prettier-plugin-tailwindcss: 0.2.7_prettier@2.8.7
+      react-html-props: 2.0.2_biqbaboplfbrettd7655fr4n2y
       tailwindcss: 3.3.1_postcss@8.4.21
       typescript: 5.0.3
 
@@ -150,6 +156,7 @@ importers:
       '@prisma/client': ^4.11.0
       '@supabase/supabase-js': ^2.14.0
       '@swc/core': ^1.3.40
+      encoding: ^0.1.13
       eslint-config-custom-server: workspace:*
       prisma: ^4.11.0
       redis: ^4.6.5
@@ -157,11 +164,12 @@ importers:
       typescript: ^4.8.3
     dependencies:
       '@prisma/client': 4.11.0_prisma@4.11.0
-      '@supabase/supabase-js': 2.14.0
+      '@supabase/supabase-js': 2.14.0_encoding@0.1.13
       redis: 4.6.5
       tsup: 6.5.0_lqosj5kblbd3mbclvtesolq7ji
     devDependencies:
       '@swc/core': 1.3.40
+      encoding: 0.1.13
       eslint-config-custom-server: link:../eslint-config-custom-server
       prisma: 4.11.0
       typescript: 4.9.3
@@ -192,35 +200,6 @@ importers:
 
   packages/tsconfig:
     specifiers: {}
-
-  packages/ui:
-    specifiers:
-      '@types/jest': ^26.0.22
-      '@types/react': ^17.0.13
-      '@types/react-dom': ^17.0.8
-      eslint: ^7.32.0
-      eslint-config-custom: workspace:*
-      jest: ^26.6.3
-      jest-presets: workspace:*
-      react: ^18.2.0
-      react-dom: ^18.2.0
-      tsconfig: workspace:*
-      tsup: ^6.2.3
-      typescript: ^4.8.3
-    dependencies:
-      react-dom: 18.2.0_react@18.2.0
-    devDependencies:
-      '@types/jest': 26.0.24
-      '@types/react': 17.0.52
-      '@types/react-dom': 17.0.18
-      eslint: 7.32.0
-      eslint-config-custom: link:../eslint-config-custom
-      jest: 26.6.3
-      jest-presets: link:../jest-presets
-      react: 18.2.0
-      tsconfig: link:../tsconfig
-      tsup: 6.5.0_typescript@4.9.3
-      typescript: 4.9.3
 
 packages:
 
@@ -876,6 +855,7 @@ packages:
       - supports-color
       - ts-node
       - utf-8-validate
+    dev: false
 
   /@jest/core/26.6.3_canvas@2.11.0:
     resolution: {integrity: sha512-xvV1kKbhfUqFVuZ8Cyo+JPpipAHHAV3kcDBftiduK8EICXmTFddryy3P7NfZt8Pv37rA9nEJBKCCkglCPt/Xjw==}
@@ -1010,6 +990,7 @@ packages:
       - supports-color
       - ts-node
       - utf-8-validate
+    dev: false
 
   /@jest/test-sequencer/26.6.3_canvas@2.11.0:
     resolution: {integrity: sha512-YHlVIjP5nfEyjlrSr8t/YdNfU/1XEt7c5b4OxcXCjyRhjzLYu/rO69/WHPuYcbCWkz8kAeZVZp2N2+IOLLEPGw==}
@@ -1392,26 +1373,26 @@ packages:
     dependencies:
       '@sinonjs/commons': 1.8.5
 
-  /@supabase/functions-js/2.1.0:
+  /@supabase/functions-js/2.1.0_encoding@0.1.13:
     resolution: {integrity: sha512-vRziB+AqRXRaGHjEFHwBo0kuNDTuAxI7VUeqU24Fe86ISoD8YEQm0dGdpleJEcqgDGWaO6pxT1tfj1BRY5PwMg==}
     dependencies:
-      cross-fetch: 3.1.5
+      cross-fetch: 3.1.5_encoding@0.1.13
     transitivePeerDependencies:
       - encoding
     dev: false
 
-  /@supabase/gotrue-js/2.20.0:
+  /@supabase/gotrue-js/2.20.0_encoding@0.1.13:
     resolution: {integrity: sha512-dbbEXrzb6OdWeYJQ8VYnJj2sMiZYw8XGj1B5rZlbcjDxkW0Za04x+wWn6g6T5/6RwNm2kReqgAR5ufYeCPuCDA==}
     dependencies:
-      cross-fetch: 3.1.5
+      cross-fetch: 3.1.5_encoding@0.1.13
     transitivePeerDependencies:
       - encoding
     dev: false
 
-  /@supabase/postgrest-js/1.5.0:
+  /@supabase/postgrest-js/1.5.0_encoding@0.1.13:
     resolution: {integrity: sha512-YaU1HBE43Ba+FGmnXuvK+xYeHylkDKd04PYeKDUCoE2bUHoxSDqnjHbOwmLjnusGZi3X1MrFeUH1Wwb4bHYyIg==}
     dependencies:
-      cross-fetch: 3.1.5
+      cross-fetch: 3.1.5_encoding@0.1.13
     transitivePeerDependencies:
       - encoding
     dev: false
@@ -1426,23 +1407,23 @@ packages:
       - supports-color
     dev: false
 
-  /@supabase/storage-js/2.3.1:
+  /@supabase/storage-js/2.3.1_encoding@0.1.13:
     resolution: {integrity: sha512-BaPIvyvjuZW1V0CnfGKUZyzpBUXnsh0XD8eqTOYd+MdiGPmIPI0vtwnT4fAoK8mipp1vpcN62EVQaqeUnWXPtQ==}
     dependencies:
-      cross-fetch: 3.1.5
+      cross-fetch: 3.1.5_encoding@0.1.13
     transitivePeerDependencies:
       - encoding
     dev: false
 
-  /@supabase/supabase-js/2.14.0:
+  /@supabase/supabase-js/2.14.0_encoding@0.1.13:
     resolution: {integrity: sha512-pdcYDaxTUqv5A8NqDnLn731rTP0Wm469H+0ag6Jb8YpWR95rmusfpGY7vrykWXvdnvCMxoG6eEwSF9vQtxVrow==}
     dependencies:
-      '@supabase/functions-js': 2.1.0
-      '@supabase/gotrue-js': 2.20.0
-      '@supabase/postgrest-js': 1.5.0
+      '@supabase/functions-js': 2.1.0_encoding@0.1.13
+      '@supabase/gotrue-js': 2.20.0_encoding@0.1.13
+      '@supabase/postgrest-js': 1.5.0_encoding@0.1.13
       '@supabase/realtime-js': 2.7.1
-      '@supabase/storage-js': 2.3.1
-      cross-fetch: 3.1.5
+      '@supabase/storage-js': 2.3.1_encoding@0.1.13
+      cross-fetch: 3.1.5_encoding@0.1.13
     transitivePeerDependencies:
       - encoding
       - supports-color
@@ -1811,24 +1792,10 @@ packages:
   /@types/range-parser/1.2.4:
     resolution: {integrity: sha512-EEhsLsD6UsDM1yFhAvy0Cjr6VwmpMWqFBCb9w07wVugF7w9nfajxLuVmngTIpgS6svCnm6Vaw+MZhoDCKnOfsw==}
 
-  /@types/react-dom/17.0.18:
-    resolution: {integrity: sha512-rLVtIfbwyur2iFKykP2w0pl/1unw26b5td16d5xMgp7/yjTHomkyxPYChFoCr/FtEX1lN9wY6lFj1qvKdS5kDw==}
-    dependencies:
-      '@types/react': 17.0.52
-    dev: true
-
   /@types/react-dom/18.0.11:
     resolution: {integrity: sha512-O38bPbI2CWtgw/OoQoY+BRelw7uysmXbWvw3nLWO21H1HSh+GOlqPuXshJfjmpNlKiiSDG9cc1JZAaMmVdcTlw==}
     dependencies:
       '@types/react': 18.0.33
-    dev: true
-
-  /@types/react/17.0.52:
-    resolution: {integrity: sha512-vwk8QqVODi0VaZZpDXQCmEmiOuyjEFPY7Ttaw5vjM112LOq37yz1CDJGrRJwA1fYEq4Iitd5rnjd1yWAc/bT+A==}
-    dependencies:
-      '@types/prop-types': 15.7.5
-      '@types/scheduler': 0.16.2
-      csstype: 3.1.1
     dev: true
 
   /@types/react/18.0.33:
@@ -2614,6 +2581,10 @@ packages:
       isobject: 3.0.1
       static-extend: 0.1.2
 
+  /classnames/2.3.2:
+    resolution: {integrity: sha512-CSbhY4cFEJRe6/GQzIk5qXZ4Jeg5pcsP7b5peFSDpffpe1cqjASH/n9UTjBwOp6XpMSTwQ8Za2K5V02ueA7Tmw==}
+    dev: false
+
   /client-only/0.0.1:
     resolution: {integrity: sha512-IV3Ou0jSMzZrd3pZ48nLkT9DA7Ag1pnPzaiQhpW7c3RbcqqzvzzVu+L8gfqMp/8IM2MQtSiqaCxrrcfu8I8rMA==}
     dev: false
@@ -2735,10 +2706,10 @@ packages:
       vary: 1.1.2
     dev: false
 
-  /cross-fetch/3.1.5:
+  /cross-fetch/3.1.5_encoding@0.1.13:
     resolution: {integrity: sha512-lvb1SBsI0Z7GDwmuid+mU3kWVBwTVUbe7S0H52yaaAdQOXq2YktTCZdlAcNKFzE6QtRz0snpw9bNiPeOIkkQvw==}
     dependencies:
-      node-fetch: 2.6.7
+      node-fetch: 2.6.7_encoding@0.1.13
     transitivePeerDependencies:
       - encoding
     dev: false
@@ -3032,6 +3003,11 @@ packages:
     resolution: {integrity: sha512-TPJXq8JqFaVYm2CWmPvnP2Iyo4ZSM7/QKcSmuMLDObfpH5fi7RUGmd/rTDf+rut/saiDiQEeVTNgAmJEdAOx0w==}
     engines: {node: '>= 0.8'}
     dev: false
+
+  /encoding/0.1.13:
+    resolution: {integrity: sha512-ETBauow1T35Y/WZMkio9jiM0Z5xjHHmJ4XmjZOq1l/dXz3lr2sRn87nJy20RupqSh1F2m3HHPSp8ShIPQJrJ3A==}
+    dependencies:
+      iconv-lite: 0.6.3
 
   /end-of-stream/1.4.4:
     resolution: {integrity: sha512-+uw1inIHVPQoaVuHzRyXd21icM+cnt4CzD5rW+NC1wjOUSTOs+Te7FOv7AhN7vS9x/oIyhLP5PR1H+phQAHu5Q==}
@@ -4359,6 +4335,12 @@ packages:
     dependencies:
       safer-buffer: 2.1.2
 
+  /iconv-lite/0.6.3:
+    resolution: {integrity: sha512-4fCk79wshMdzMp2rH06qWrJE4iolqLhCUH+OiuIgU++RB0+94NlDL81atO7GX55uUKueo0txHNtvEyI6D7WdMw==}
+    engines: {node: '>=0.10.0'}
+    dependencies:
+      safer-buffer: 2.1.2
+
   /ieee754/1.2.1:
     resolution: {integrity: sha512-dcyqhDvX1C46lXZcVqCpK+FtMRQVdIMN6/Df5js2zouUsqG7I6sFxitIC+7KYK29KdXOLHdu9zL4sFnoVQnqaA==}
     dev: false
@@ -4738,6 +4720,7 @@ packages:
       - supports-color
       - ts-node
       - utf-8-validate
+    dev: false
 
   /jest-cli/26.6.3_canvas@2.11.0:
     resolution: {integrity: sha512-GF9noBSa9t08pSyl3CY4frMrqp+aQXFGFkf5hEPbh/pIUFYWMK6ZLTfbmadxJVcJrdRoChlWQsA2VkJcDFK8hg==}
@@ -4797,6 +4780,7 @@ packages:
       - canvas
       - supports-color
       - utf-8-validate
+    dev: false
 
   /jest-config/26.6.3_canvas@2.11.0:
     resolution: {integrity: sha512-t5qdIj/bCj2j7NFVHb2nFB4aUdfucDn3JRKgrZnplb8nieAirAzRSHP8uDEd+qV6ygzg9Pz4YG7UTJf94LPSyg==}
@@ -4873,6 +4857,7 @@ packages:
       - canvas
       - supports-color
       - utf-8-validate
+    dev: false
 
   /jest-environment-jsdom/26.6.2_canvas@2.11.0:
     resolution: {integrity: sha512-jgPqCruTlt3Kwqg5/WVFyHIOJHsiAvhcp2qiR2QQstuG9yWox5+iHpU3ZrcBxW14T4fe5Z68jAfLRh7joCSP2Q==}
@@ -4957,6 +4942,7 @@ packages:
       - supports-color
       - ts-node
       - utf-8-validate
+    dev: false
 
   /jest-jasmine2/26.6.3_canvas@2.11.0:
     resolution: {integrity: sha512-kPKUrQtc8aYwBV7CqBg5pu+tmYXlvFlSFYn18ev4gPFtrRzB15N2gW/Roew3187q2w2eHuu0MU9TJz6w0/nPEg==}
@@ -5093,6 +5079,7 @@ packages:
       - supports-color
       - ts-node
       - utf-8-validate
+    dev: false
 
   /jest-runner/26.6.3_canvas@2.11.0:
     resolution: {integrity: sha512-atgKpRHnaA2OvByG/HpGA4g6CSPS/1LK0jK3gATJAoptC1ojltpmVlYC3TYgdmGp+GLuhzpH30Gvs36szSL2JQ==}
@@ -5164,6 +5151,7 @@ packages:
       - supports-color
       - ts-node
       - utf-8-validate
+    dev: false
 
   /jest-runtime/26.6.3_canvas@2.11.0:
     resolution: {integrity: sha512-lrzyR3N8sacTAMeonbqpnSka1dHNux2uk0qqDXVkMv2c/A3wYnvQ4EXuI013Y6+gSKSCxdaczvf4HF0mVXHRdw==}
@@ -5291,6 +5279,7 @@ packages:
       - supports-color
       - ts-node
       - utf-8-validate
+    dev: false
 
   /jest/26.6.3_canvas@2.11.0:
     resolution: {integrity: sha512-lGS5PXGAzR4RF7V5+XObhqz2KZIDUA1yD0DG6pBVmy10eh0ZIXQImRuzocsI/N2XZ1GrLFwTS27In2i2jlpq1Q==}
@@ -5376,6 +5365,7 @@ packages:
       - bufferutil
       - supports-color
       - utf-8-validate
+    dev: false
 
   /jsdom/16.7.0_canvas@2.11.0:
     resolution: {integrity: sha512-u9Smc2G1USStM+s/x1ru5Sxrl6mPYCbByG1U/hUmqaVsm4tbNyS7CicOSRyuGQYZhTu0h84qkZZQ/I+dzizSVw==}
@@ -5880,6 +5870,19 @@ packages:
         optional: true
     dependencies:
       whatwg-url: 5.0.0
+
+  /node-fetch/2.6.7_encoding@0.1.13:
+    resolution: {integrity: sha512-ZjMPFEfVx5j+y2yF35Kzx5sF7kDzxuDj6ziH4FFbOp87zKDZNx8yExJIb05OGF4Nlt9IHFIMBkRl41VdvcNdbQ==}
+    engines: {node: 4.x || >=6.0.0}
+    peerDependencies:
+      encoding: ^0.1.0
+    peerDependenciesMeta:
+      encoding:
+        optional: true
+    dependencies:
+      encoding: 0.1.13
+      whatwg-url: 5.0.0
+    dev: false
 
   /node-gyp-build/4.6.0:
     resolution: {integrity: sha512-NTZVKn9IylLwUzaKjkas1e4u2DLNcV4rdYagA4PWdPwW87Bi7z+BznyKSRwS/761tV/lzCGXplWsiaMjLqP2zQ==}
@@ -6517,7 +6520,16 @@ packages:
       loose-envify: 1.4.0
       react: 18.2.0
       scheduler: 0.23.0
-    dev: false
+
+  /react-html-props/2.0.2_biqbaboplfbrettd7655fr4n2y:
+    resolution: {integrity: sha512-5spuo3V4d39C8EGFPkI7k2XpOP0Nu3SwG2g5LwBZ9C0eT6VTxIpYo3skm1lOtp6Zla461MutNMA9HCoFqnM4vg==}
+    peerDependencies:
+      react: ^16.0.0 || ^17.0.0 || ^18.0.0 || ^19.0.0 || ^20.0.0
+      react-dom: ^16.0.0 || ^17.0.0 || ^18.0.0 || ^19.0.0 || ^20.0.0
+    dependencies:
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
+    dev: true
 
   /react-is/16.13.1:
     resolution: {integrity: sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==}
@@ -6773,7 +6785,6 @@ packages:
     resolution: {integrity: sha512-CtuThmgHNg7zIZWAXi3AsyIzA3n4xx7aNyjwC2VJldO2LMVDhFK+63xGqq6CsJH4rTAt6/M+N4GhZiDYPx9eUw==}
     dependencies:
       loose-envify: 1.4.0
-    dev: false
 
   /semver/5.7.1:
     resolution: {integrity: sha512-sauaDf/PZdVgrLTNYHRtpXa1iRiKcaebiKQ1BJdpQlWH2lCvexQdX55snPFyK7QzpudqbCI0qXFfOasHdyNDGQ==}
