@@ -69,7 +69,7 @@ export async function getSingleCard(
   const { id, generation, rank, masteryPoints, masteryRank } = cardFromDb;
   const exampleEmbed = new EmbedBuilder()
     .setTitle("Card Details")
-    .setDescription(`Owned by <@${interaction.user.toString()}>`)
+    .setDescription(`Owned by ${interaction.user.toString()}`)
     .setImage("attachment://card.png")
     .addFields({
       name: "\u200B",
