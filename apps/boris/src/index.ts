@@ -4,16 +4,14 @@ import { getDiscordClient } from "./discordClient";
 import registerListeners from "./registerListeners";
 import registerSlashCommands from "./registerSlashCommands";
 
-require("dotenv-mono").load();
+// Create a new client instance
+const client = getDiscordClient();
 
 registerSlashCommands()
   .then(() => console.log("slash commands registered successfully"))
   .catch((err) => {
     console.log("slash commands could not be registered", err);
   });
-
-// Create a new client instance
-const client = getDiscordClient();
 
 client.once(Events.ClientReady, (c) => {
   console.log(`Ready! Logged in as ${c.user.tag}`);
