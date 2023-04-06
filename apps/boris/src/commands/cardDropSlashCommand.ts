@@ -63,8 +63,12 @@ async function handleComponentInteraction(
   }
 
   if (buttonInteraction.user.id === interaction.user.id) {
-    await buttonInteraction.deferUpdate();
     delete uniqueButtonIds[chosenSkin.mappedCustomButtonId];
+    const itemUsed = await trackUserAction(
+      buttonInteraction.user.id,
+      UserActions.Claim
+    );
+    await buttonInteraction.deferUpdate();
     const cardImage = await drawImages([chosenSkin]);
 
     const cardUrl = v4();
@@ -103,10 +107,7 @@ async function handleComponentInteraction(
         emojisToEmojiIds[chosenSkin.rank]
       }${chosenSkin.rank}` + ` | \`${card.id}\`!**`
     );
-    const itemUsed = await trackUserAction(
-      buttonInteraction.user.id,
-      UserActions.Claim
-    );
+
     if (itemUsed) {
       await sendMessageToChannel(
         client,
