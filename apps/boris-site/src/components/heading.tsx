@@ -2,16 +2,6 @@ import React from "react";
 import { HeadingProps, PProps } from "react-html-props";
 import cn from "classnames";
 
-type HeadingVariant = "h1" | "h2" | "h3" | "h4" | "h5";
-
-const variantsMapping: Record<HeadingVariant, HeadingVariant> = {
-  h1: "h1",
-  h2: "h2",
-  h3: "h3",
-  h4: "h4",
-  h5: "h5",
-};
-
 /*
  * i was running into issues trying to dynamically create a heading object based on a prop thats passed in
  * not sure why but it would randomly not do the text-h1 or h2 classname and would only work after i changed something in the component

@@ -3,12 +3,9 @@ import Head from "next/head";
 import Link from "next/link";
 import { useUser, SignInButton, SignOutButton } from "@clerk/nextjs";
 
-import { api } from "~/utils/api";
-
 const Home: NextPage = () => {
-  const hello = api.example.hello.useQuery({ text: "from tRPC" });
+  // const hello = api.example.hello.useQuery({ text: "from tRPC" });
   const user = useUser();
-  console.log(user);
 
   return (
     <>
@@ -49,9 +46,6 @@ const Home: NextPage = () => {
           <div>
             {!user.isSignedIn && <SignInButton />}
             {!!user.isSignedIn && <SignOutButton />}
-            <div>
-              {!!user.user && "externalId" + user.user.externalAccounts}
-            </div>
           </div>
         </div>
       </main>
